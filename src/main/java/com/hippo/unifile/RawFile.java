@@ -119,12 +119,6 @@ class RawFile extends UniFile {
     }
 
     @Override
-    public UniFile contains(String displayName) {
-        final File child = new File(mFile, displayName);
-        return child.exists() ? new RawFile(this, child) : null;
-    }
-
-    @Override
     public UniFile[] listFiles() {
         final ArrayList<UniFile> results = new ArrayList<UniFile>();
         final File[] files = mFile.listFiles();
@@ -134,6 +128,12 @@ class RawFile extends UniFile {
             }
         }
         return results.toArray(new UniFile[results.size()]);
+    }
+
+    @Override
+    public UniFile findFile(String displayName) {
+        final File child = new File(mFile, displayName);
+        return child.exists() ? new RawFile(this, child) : null;
     }
 
     @Override

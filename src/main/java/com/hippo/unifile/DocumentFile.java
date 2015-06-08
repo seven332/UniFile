@@ -36,7 +36,7 @@ class DocumentFile extends UniFile {
 
     @Override
     public UniFile createFile(String displayName) {
-        UniFile child = contains(displayName);
+        UniFile child = findFile(displayName);
 
         if (child != null) {
             if (child.isFile()) {
@@ -52,7 +52,7 @@ class DocumentFile extends UniFile {
 
     @Override
     public UniFile createDirectory(String displayName) {
-        UniFile child = contains(displayName);
+        UniFile child = findFile(displayName);
 
         if (child != null) {
             if (child.isDirectory()) {
@@ -122,13 +122,6 @@ class DocumentFile extends UniFile {
     }
 
     @Override
-    public UniFile contains(String displayName) {
-        Uri childUri = DocumentsContractApi21.buildChildUri(mUri, displayName);
-        return DocumentsContractApi19.exists(mContext, childUri) ?
-                new DocumentFile(this, mContext, childUri) : null;
-    }
-
-    @Override
     public UniFile[] listFiles() {
         final Uri[] result = DocumentsContractApi21.listFiles(mContext, mUri);
         final UniFile[] resultFiles = new UniFile[result.length];
@@ -136,6 +129,13 @@ class DocumentFile extends UniFile {
             resultFiles[i] = new DocumentFile(this, mContext, result[i]);
         }
         return resultFiles;
+    }
+
+    @Override
+    public UniFile findFile(String displayName) {
+        Uri childUri = DocumentsContractApi21.buildChildUri(mUri, displayName);
+        return DocumentsContractApi19.exists(mContext, childUri) ?
+                new DocumentFile(this, mContext, childUri) : null;
     }
 
     @Override

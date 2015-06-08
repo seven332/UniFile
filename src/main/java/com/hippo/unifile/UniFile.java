@@ -269,14 +269,6 @@ public abstract class UniFile {
     public abstract boolean exists();
 
     /**
-     * Returns the file contained in the directory represented by this
-     * file.
-     *
-     * @return the file, or null if it does not exist.
-     */
-    public abstract UniFile contains(String displayName);
-
-    /**
      * Returns an array of files contained in the directory represented by this
      * file.
      *
@@ -291,14 +283,7 @@ public abstract class UniFile {
      * given display name. Returns {@code null} when no matching document is
      * found.
      */
-    public UniFile findFile(String displayName) {
-        for (UniFile doc : listFiles()) {
-            if (displayName.equals(doc.getName())) {
-                return doc;
-            }
-        }
-        return null;
-    }
+    public abstract UniFile findFile(String displayName);
 
     /**
      * Renames this file to {@code displayName}.
