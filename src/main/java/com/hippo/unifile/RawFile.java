@@ -17,6 +17,7 @@
 package com.hippo.unifile;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
@@ -39,12 +40,20 @@ class RawFile extends UniFile {
     @Override
     public UniFile createFile(String displayName) {
         final File target = new File(mFile, displayName);
-        try {
-            target.createNewFile();
-            return new RawFile(this, target);
-        } catch (IOException e) {
-            Log.w(TAG, "Failed to createFile: " + e);
-            return null;
+        if (target.exists()) {
+            if (target.isFile()) {
+                return new RawFile(this, target);
+            } else {
+                return null;
+            }
+        } else {
+            try {
+                target.createNewFile();
+                return new RawFile(this, target);
+            } catch (IOException e) {
+                Log.w(TAG, "Failed to createFile: " + e);
+                return null;
+            }
         }
     }
 
@@ -148,17 +157,17 @@ class RawFile extends UniFile {
     }
 
     @Override
-    public OutputStream openOutputStream() throws IOException {
+    public @NonNull OutputStream openOutputStream() throws IOException {
         return new FileOutputStream(mFile);
     }
 
     @Override
-    public OutputStream openOutputStream(boolean append) throws IOException {
+    public @NonNull OutputStream openOutputStream(boolean append) throws IOException {
         return new FileOutputStream(mFile, append);
     }
 
     @Override
-    public InputStream openInputStream() throws IOException {
+    public @NonNull InputStream openInputStream() throws IOException {
         return new FileInputStream(mFile);
     }
 

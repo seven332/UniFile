@@ -18,6 +18,7 @@ package com.hippo.unifile;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -150,17 +151,29 @@ class DocumentFile extends UniFile {
     }
 
     @Override
-    public OutputStream openOutputStream() throws IOException {
-        return mContext.getContentResolver().openOutputStream(mUri);
+    public @NonNull OutputStream openOutputStream() throws IOException {
+        OutputStream os = mContext.getContentResolver().openOutputStream(mUri);
+        if (os == null) {
+            throw new IOException("Can't open OutputStream");
+        }
+        return os;
     }
 
     @Override
-    public OutputStream openOutputStream(boolean append) throws IOException {
-        return mContext.getContentResolver().openOutputStream(mUri, append ? "wa" : "w");
+    public @NonNull OutputStream openOutputStream(boolean append) throws IOException {
+        OutputStream os = mContext.getContentResolver().openOutputStream(mUri, append ? "wa" : "w");
+        if (os == null) {
+            throw new IOException("Can't open OutputStream");
+        }
+        return os;
     }
 
     @Override
-    public InputStream openInputStream() throws IOException {
-        return mContext.getContentResolver().openInputStream(mUri);
+    public @NonNull InputStream openInputStream() throws IOException {
+        InputStream is = mContext.getContentResolver().openInputStream(mUri);
+        if (is == null) {
+            throw new IOException("Can't open InputStream");
+        }
+        return is;
     }
 }

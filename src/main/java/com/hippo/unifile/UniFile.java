@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -311,7 +312,7 @@ public abstract class UniFile {
      * @return the {@link OutputStream}
      * @throws IOException
      */
-    public abstract OutputStream openOutputStream() throws IOException;
+    public abstract @NonNull OutputStream openOutputStream() throws IOException;
 
     /**
      * Open a stream on to the content associated with the file
@@ -320,7 +321,7 @@ public abstract class UniFile {
      * @return the {@link OutputStream}
      * @throws IOException
      */
-    public abstract OutputStream openOutputStream(boolean append) throws IOException;
+    public abstract @NonNull OutputStream openOutputStream(boolean append) throws IOException;
 
     /**
      * Open a stream on to the content associated with the file
@@ -328,5 +329,5 @@ public abstract class UniFile {
      * @return the {@link InputStream}
      * @throws IOException
      */
-    public abstract InputStream openInputStream() throws IOException;
+    public abstract @NonNull InputStream openInputStream() throws IOException;
 }
