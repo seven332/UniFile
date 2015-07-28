@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 /**
  * Representation of a document backed by either a
@@ -95,7 +96,7 @@ public abstract class UniFile {
      * through this tree.
      */
     public static UniFile fromFile(File file) {
-        return new RawFile(null, file);
+        return file != null ? new RawFile(null, file) : null;
     }
 
     /**
@@ -118,16 +119,38 @@ public abstract class UniFile {
     }
 
     /**
-     * Test if given Uri is backed by a
-     * {@link android.provider.DocumentsProvider}.
+     * Create a {@link UniFile} representing the filesystem tree or
+     * the document tree rooted at the given {@link Uri}.
+     *
+     * @param uri the uri of file or tree
      */
-    public static boolean isDocumentUri(Context context, Uri uri) {
-        final int version = Build.VERSION.SDK_INT;
-        if (version >= 19) {
-            return DocumentsContractApi19.isDocumentUri(context, uri);
+    public static UniFile fromUri(Context context, Uri uri) {
+        if (isFileUri(uri)) {
+            return fromFile(new File(uri.getPath()));
+        } else if (isTreeUri(uri)) {
+            return fromTreeUri(context, uri);
         } else {
+            return null;
+        }
+    }
+
+    /**
+     * Test if given Uri is FileUri
+     */
+    public static boolean isFileUri(Uri uri) {
+        return uri != null && ContentResolver.SCHEME_FILE.equals(uri.getScheme());
+    }
+
+    /**
+     * Test if given Uri is TreeUri
+     */
+    public static boolean isTreeUri(Uri uri) {
+        if (uri == null) {
             return false;
         }
+        final List<String> paths = uri.getPathSegments();
+        return (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())
+                && paths.size() >= 2 && "tree".equals(paths.get(0)));
     }
 
     /**
@@ -155,7 +178,7 @@ public abstract class UniFile {
     /**
      * Return a Uri for the underlying document represented by this file. This
      * can be used with other platform APIs to manipulate or share the
-     * underlying content. You can use {@link #isDocumentUri(Context, Uri)} to
+     * underlying content. You can use {@link #isTreeUri(Uri)} to
      * test if the returned Uri is backed by a
      * {@link android.provider.DocumentsProvider}.
      *
