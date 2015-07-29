@@ -36,5 +36,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':yorozuya')
     compile 'com.android.support:support-annotations:22.2.0'
 }

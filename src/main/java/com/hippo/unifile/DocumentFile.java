@@ -179,6 +179,6 @@ class DocumentFile extends UniFile {
 
     @Override
     public @NonNull UniRandomReadFile createRandomReadFile() throws IOException {
-        return new DocumentRandomReadFile(mContext, mUri);
+        return new DocumentRandomReadFile(this);
     }
 }

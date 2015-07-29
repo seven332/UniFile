@@ -16,49 +16,74 @@
 
 package com.hippo.unifile;
 
-import android.content.Context;
-import android.net.Uri;
-import android.os.ParcelFileDescriptor;
+import com.hippo.yorozuya.IOUtils;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
+import java.io.InputStream;
 
 public class DocumentRandomReadFile extends UniRandomReadFile {
 
-    private FileChannel mChannel;
+    private DocumentFile mDocumentFile;
+    private InputStream mInputStream;
+    private long position;
 
-    public DocumentRandomReadFile(Context context, Uri treeUri) throws FileNotFoundException {
-        ParcelFileDescriptor descriptor = context.getContentResolver().openFileDescriptor(treeUri, "r");
-        FileInputStream fis = new FileInputStream(descriptor.getFileDescriptor());
-        mChannel = fis.getChannel();
+    public DocumentRandomReadFile(DocumentFile documentFile) throws IOException {
+        mDocumentFile =documentFile;
+        mInputStream = documentFile.openInputStream();
+        position = 0;
     }
 
     @Override
     public int read(byte[] buffer, int byteOffset, int byteCount) throws IOException {
-        ByteBuffer byteBuffer = ByteBuffer.wrap(buffer, byteOffset, byteCount);
-        return mChannel.read(byteBuffer);
+        InputStream is = mInputStream;
+        if (is == null) {
+            throw new IOException("DocumentRandomReadFile is closed");
+        }
+
+        int count = 0;
+        int n;
+        while (byteCount > 0 && -1 != (n = is.read(buffer, byteOffset, byteCount))) {
+            count += n;
+            byteOffset += n;
+            byteCount -= n;
+        }
+        position += count;
+
+        return count;
     }
 
     @Override
     public void seek(long offset) throws IOException {
-        mChannel.position(offset);
+        InputStream is = mInputStream;
+        if (is == null) {
+            throw new IOException("DocumentRandomReadFile is closed");
+        }
+
+        long actuallySkip;
+        if (offset < position) {
+            IOUtils.closeQuietly(is);
+            mInputStream = mDocumentFile.openInputStream();
+            actuallySkip = mInputStream.skip(offset);
+            position = actuallySkip;
+        } else if (offset > position) {
+            actuallySkip = mInputStream.skip(offset - position);
+            position += actuallySkip;
+        }
     }
 
     @Override
     public long position() throws IOException {
-        return mChannel.position();
+        return position;
     }
 
     @Override
     public long length() throws IOException {
-        return mChannel.size();
+        return mDocumentFile.length();
     }
 
     @Override
     public void close() throws IOException {
-        mChannel.close();
+        mDocumentFile = null;
+        IOUtils.closeQuietly(mInputStream);
     }
 }
