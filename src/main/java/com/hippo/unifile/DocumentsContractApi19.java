@@ -26,15 +26,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.DocumentsContract;
 import android.text.TextUtils;
-import android.util.Log;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 class DocumentsContractApi19 {
     private static final String TAG = "UniFile";
-
-    public static boolean isDocumentUri(Context context, Uri self) {
-        return DocumentsContract.isDocumentUri(context, self);
-    }
 
     public static String getName(Context context, Uri self) {
         return queryForString(context, self, DocumentsContract.Document.COLUMN_DISPLAY_NAME, null);
@@ -135,7 +130,7 @@ class DocumentsContractApi19 {
                     DocumentsContract.Document.COLUMN_DOCUMENT_ID }, null, null, null);
             return c.getCount() > 0;
         } catch (Exception e) {
-            Log.w(TAG, "Failed query: " + e);
+            // Log.w(TAG, "Failed query: " + e);
             return false;
         } finally {
             closeQuietly(c);
@@ -155,7 +150,7 @@ class DocumentsContractApi19 {
                 return defaultValue;
             }
         } catch (Exception e) {
-            Log.w(TAG, "Failed query: " + e);
+            // Log.w(TAG, "Failed query: " + e);
             return defaultValue;
         } finally {
             closeQuietly(c);
@@ -180,7 +175,7 @@ class DocumentsContractApi19 {
                 return defaultValue;
             }
         } catch (Exception e) {
-            Log.w(TAG, "Failed query: " + e);
+            // Log.w(TAG, "Failed query: " + e);
             return defaultValue;
         } finally {
             closeQuietly(c);

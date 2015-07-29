@@ -171,6 +171,11 @@ class RawFile extends UniFile {
         return new FileInputStream(mFile);
     }
 
+    @Override
+    public @NonNull UniRandomReadFile createRandomReadFile() throws IOException {
+        return new RawRandomReadFile(mFile);
+    }
+
     private static String getTypeForName(String name) {
         final int lastDot = name.lastIndexOf('.');
         if (lastDot >= 0) {

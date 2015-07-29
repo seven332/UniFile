@@ -353,4 +353,12 @@ public abstract class UniFile {
      * @throws IOException
      */
     public abstract @NonNull InputStream openInputStream() throws IOException;
+
+    /**
+     * Get a random read stuff of the UniFile
+     *
+     * @return the random read stuff
+     * @throws IOException
+     */
+    public abstract @NonNull UniRandomReadFile createRandomReadFile() throws IOException;
 }

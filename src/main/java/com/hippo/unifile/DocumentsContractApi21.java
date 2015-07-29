@@ -23,7 +23,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.DocumentsContract;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +79,7 @@ class DocumentsContractApi21 {
                 results.add(documentUri);
             }
         } catch (Exception e) {
-            Log.w(TAG, "Failed query: " + e);
+            // Log.w(TAG, "Failed query: " + e);
         } finally {
             closeQuietly(c);
         }
