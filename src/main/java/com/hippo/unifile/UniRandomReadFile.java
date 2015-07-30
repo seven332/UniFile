@@ -17,6 +17,8 @@
 package com.hippo.unifile;
 
 import java.io.Closeable;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public abstract class UniRandomReadFile implements Closeable {
@@ -35,5 +37,9 @@ public abstract class UniRandomReadFile implements Closeable {
 
     public long remaining() throws IOException {
         return length() - position();
+    }
+
+    public static UniRandomReadFile fromFile(File file) throws FileNotFoundException {
+        return new RawRandomReadFile(file);
     }
 }
