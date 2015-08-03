@@ -28,11 +28,19 @@ class DocumentFile extends UniFile {
 
     private Context mContext;
     private Uri mUri;
+    private String mFilename;
 
     DocumentFile(UniFile parent, Context context, Uri uri) {
         super(parent);
         mContext = context;
         mUri = uri;
+    }
+
+    DocumentFile(UniFile parent, Context context, Uri uri, String filename) {
+        super(parent);
+        mContext = context;
+        mUri = uri;
+        mFilename = filename;
     }
 
     @Override
@@ -47,7 +55,7 @@ class DocumentFile extends UniFile {
             }
         } else {
             final Uri result = DocumentsContractApi21.createFile(mContext, mUri, "application/octet-stream", displayName);
-            return (result != null) ? new DocumentFile(this, mContext, result) : null;
+            return (result != null) ? new DocumentFile(this, mContext, result, displayName) : null;
         }
     }
 
@@ -63,7 +71,7 @@ class DocumentFile extends UniFile {
             }
         } else {
             final Uri result = DocumentsContractApi21.createDirectory(mContext, mUri, displayName);
-            return (result != null) ? new DocumentFile(this, mContext, result) : null;
+            return (result != null) ? new DocumentFile(this, mContext, result, displayName) : null;
         }
     }
 
@@ -113,6 +121,44 @@ class DocumentFile extends UniFile {
     }
 
     @Override
+    public boolean ensureDir() {
+        if (isDirectory()) {
+            return true;
+        } else if (isFile()) {
+            return false;
+        }
+
+        UniFile parent = getParentFile();
+        if (parent != null && parent.ensureDir() && mFilename != null) {
+            return parent.createDirectory(mFilename) != null;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean ensureFile() {
+        if (isFile()) {
+            return true;
+        } else if (isDirectory()) {
+            return false;
+        }
+
+        UniFile parent = getParentFile();
+        if (parent != null && parent.ensureDir() && mFilename != null) {
+            return parent.createFile(mFilename) != null;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public UniFile subfile(String displayName) {
+        Uri childUri = DocumentsContractApi21.buildChildUri(mUri, displayName);
+        return new DocumentFile(this, mContext, childUri, displayName);
+    }
+
+    @Override
     public boolean delete() {
         return DocumentsContractApi19.delete(mContext, mUri);
     }
@@ -122,12 +168,24 @@ class DocumentFile extends UniFile {
         return DocumentsContractApi19.exists(mContext, mUri);
     }
 
+    private String getFilenameForUri(Uri uri) {
+        String path = uri.getPath();
+        if (path != null) {
+            int index = path.lastIndexOf('/');
+            if (index >= 0) {
+                return path.substring(index + 1);
+            }
+        }
+        return null;
+    }
+
     @Override
     public UniFile[] listFiles() {
         final Uri[] result = DocumentsContractApi21.listFiles(mContext, mUri);
         final UniFile[] resultFiles = new UniFile[result.length];
-        for (int i = 0; i < result.length; i++) {
-            resultFiles[i] = new DocumentFile(this, mContext, result[i]);
+        for (int i = 0, n = result.length; i < n; i++) {
+            Uri uri = result[i];
+            resultFiles[i] = new DocumentFile(this, mContext, uri, getFilenameForUri(uri));
         }
         return resultFiles;
     }
@@ -136,7 +194,7 @@ class DocumentFile extends UniFile {
     public UniFile findFile(String displayName) {
         Uri childUri = DocumentsContractApi21.buildChildUri(mUri, displayName);
         return DocumentsContractApi19.exists(mContext, childUri) ?
-                new DocumentFile(this, mContext, childUri) : null;
+                new DocumentFile(this, mContext, childUri, displayName) : null;
     }
 
     @Override

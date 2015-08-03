@@ -274,6 +274,26 @@ public abstract class UniFile {
     public abstract boolean canWrite();
 
     /**
+     * It works like mkdirs, but it will reture true if the UniFile is directory
+     *
+     * @return {@code true} if the directory was created
+     *         or if the directory already existed.
+     */
+    public abstract boolean ensureDir();
+
+    /**
+     * Make sure the UniFile is file
+     */
+    public abstract boolean ensureFile();
+
+    /**
+     * Get subfile of this UniFile
+     *
+     * @return the subfile
+     */
+    public abstract UniFile subfile(String displayName);
+
+    /**
      * Deletes this file.
      * <p>
      * Note that this method does <i>not</i> throw {@code IOException} on
