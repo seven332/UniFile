@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.android.model.library'
+apply plugin: 'com.android.library'
 
-model {
-    android {
-        compileSdkVersion = 23
-        buildToolsVersion = "23.0.0"
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.0"
 
-        defaultConfig.with {
-            minSdkVersion.apiLevel = 14
-            targetSdkVersion.apiLevel = 23
-            versionCode = 1
-            versionName = "1.0"
-        }
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
     }
 
-    android.buildTypes {
+    buildTypes {
         release {
-            minifyEnabled = false
-            proguardFiles += file('proguard-rules.pro')
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
