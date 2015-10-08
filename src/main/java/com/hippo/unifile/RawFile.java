@@ -51,7 +51,7 @@ class RawFile extends UniFile {
                 target.createNewFile();
                 return new RawFile(this, target);
             } catch (IOException e) {
-                Log.w(TAG, "Failed to createFile: " + e);
+                Log.w(TAG, "Failed to createFile " + displayName + ": " + e);
                 return null;
             }
         }

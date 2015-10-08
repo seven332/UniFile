@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -130,7 +131,12 @@ public abstract class UniFile {
         } else if (isTreeUri(uri)) {
             return fromTreeUri(context, uri);
         } else {
-            return null;
+            String name = MediaFile.getPath(context, uri);
+            if (!TextUtils.isEmpty(name)) {
+                return new MediaFile(context, uri);
+            } else {
+                return null;
+            }
         }
     }
 
