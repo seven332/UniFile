@@ -19,6 +19,8 @@ package com.hippo.unifile;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import android.webkit.MimeTypeMap;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,6 +56,18 @@ class DocumentFile extends UniFile {
                 return null;
             }
         } else {
+            int index = displayName.lastIndexOf('.');
+            if (index > 0) {
+                String name = displayName.substring(0, index);
+                String extension = displayName.substring(index + 1);
+                String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+                if (!TextUtils.isEmpty(mimeType)) {
+                    final Uri result = DocumentsContractApi21.createFile(mContext, mUri, mimeType, name);
+                    return (result != null) ? new DocumentFile(this, mContext, result, displayName) : null;
+                }
+            }
+
+            // Not dot in displayName or dot is the first char or can't get MimeType
             final Uri result = DocumentsContractApi21.createFile(mContext, mUri, "application/octet-stream", displayName);
             return (result != null) ? new DocumentFile(this, mContext, result, displayName) : null;
         }
