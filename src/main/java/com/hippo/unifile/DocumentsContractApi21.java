@@ -66,7 +66,7 @@ class DocumentsContractApi21 {
         final ContentResolver resolver = context.getContentResolver();
         final Uri childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(self,
                 DocumentsContract.getDocumentId(self));
-        final ArrayList<Uri> results = new ArrayList<Uri>();
+        final ArrayList<Uri> results = new ArrayList<>();
 
         Cursor c = null;
         try {

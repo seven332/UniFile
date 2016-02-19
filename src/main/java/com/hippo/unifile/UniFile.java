@@ -280,7 +280,7 @@ public abstract class UniFile {
     public abstract boolean canWrite();
 
     /**
-     * It works like mkdirs, but it will reture true if the UniFile is directory
+     * It works like mkdirs, but it will return true if the UniFile is directory
      *
      * @return {@code true} if the directory was created
      *         or if the directory already existed.
@@ -293,11 +293,11 @@ public abstract class UniFile {
     public abstract boolean ensureFile();
 
     /**
-     * Get subfile of this UniFile
+     * Get subFile of this UniFile
      *
-     * @return the subfile
+     * @return the subFile
      */
-    public abstract UniFile subfile(String displayName);
+    public abstract UniFile subFile(String displayName);
 
     /**
      * Deletes this file.

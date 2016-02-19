@@ -54,11 +54,7 @@ class DocumentsContractApi19 {
 
     public static boolean isFile(Context context, Uri self) {
         final String type = getRawType(context, self);
-        if (DocumentsContract.Document.MIME_TYPE_DIR.equals(type) || TextUtils.isEmpty(type)) {
-            return false;
-        } else {
-            return true;
-        }
+        return !(DocumentsContract.Document.MIME_TYPE_DIR.equals(type) || TextUtils.isEmpty(type));
     }
 
     public static long lastModified(Context context, Uri self) {
@@ -77,11 +73,7 @@ class DocumentsContractApi19 {
         }
 
         // Ignore documents without MIME
-        if (TextUtils.isEmpty(getRawType(context, self))) {
-            return false;
-        }
-
-        return true;
+        return !TextUtils.isEmpty(getRawType(context, self));
     }
 
     public static boolean canWrite(Context context, Uri self) {

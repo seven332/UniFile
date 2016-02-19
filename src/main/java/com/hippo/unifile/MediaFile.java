@@ -39,7 +39,7 @@ public class MediaFile extends UniFile {
     MediaFile(Context context, Uri uri) {
         super(null);
 
-        mContext = context;
+        mContext = context.getApplicationContext();
         mUri = uri;
     }
 
@@ -113,7 +113,9 @@ public class MediaFile extends UniFile {
             } catch (Exception e) {
                 // Ignore
             } finally {
-                IOUtils.closeQuietly(cursor);
+                if (cursor != null) {
+                    cursor.close();
+                }
             }
         }
 
@@ -180,7 +182,7 @@ public class MediaFile extends UniFile {
     }
 
     @Override
-    public UniFile subfile(String displayName) {
+    public UniFile subFile(String displayName) {
         return null;
     }
 

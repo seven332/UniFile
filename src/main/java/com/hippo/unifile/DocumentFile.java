@@ -34,13 +34,13 @@ class DocumentFile extends UniFile {
 
     DocumentFile(UniFile parent, Context context, Uri uri) {
         super(parent);
-        mContext = context;
+        mContext = context.getApplicationContext();
         mUri = uri;
     }
 
     DocumentFile(UniFile parent, Context context, Uri uri, String filename) {
         super(parent);
-        mContext = context;
+        mContext = context.getApplicationContext();
         mUri = uri;
         mFilename = filename;
     }
@@ -167,7 +167,7 @@ class DocumentFile extends UniFile {
     }
 
     @Override
-    public UniFile subfile(String displayName) {
+    public UniFile subFile(String displayName) {
         Uri childUri = DocumentsContractApi21.buildChildUri(mUri, displayName);
         return new DocumentFile(this, mContext, childUri, displayName);
     }
