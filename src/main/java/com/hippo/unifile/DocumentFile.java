@@ -25,10 +25,11 @@ import android.webkit.MimeTypeMap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 class DocumentFile extends UniFile {
 
-    private Context mContext;
+    private final Context mContext;
     private Uri mUri;
     private String mFilename;
 
@@ -202,6 +203,24 @@ class DocumentFile extends UniFile {
             resultFiles[i] = new DocumentFile(this, mContext, uri, getFilenameForUri(uri));
         }
         return resultFiles;
+    }
+
+    @Override
+    public UniFile[] listFiles(FilenameFilter filter) {
+        if (null == filter) {
+            return listFiles();
+        }
+
+        final Uri[] result = DocumentsContractApi21.listFiles(mContext, mUri);
+        final ArrayList<UniFile> results = new ArrayList<>();
+        for (int i = 0, n = result.length; i < n; i++) {
+            Uri uri = result[i];
+            String name = getFilenameForUri(uri);
+            if (filter.accept(this, name)) {
+                results.add(new DocumentFile(this, mContext, uri, name));
+            }
+        }
+        return results.toArray(new UniFile[results.size()]);
     }
 
     @Override

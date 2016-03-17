@@ -329,6 +329,16 @@ public abstract class UniFile {
     public abstract UniFile[] listFiles();
 
     /**
+     * Gets a list of the files in the directory represented by this file. This
+     * list is then filtered through a FilenameFilter and the names of files
+     * with matching names are returned as an array of strings.
+     *
+     * @param filter the filter to match names against, may be {@code null}.
+     * @return an array of files or {@code null}.
+     */
+    public abstract UniFile[] listFiles(FilenameFilter filter);
+
+    /**
      * Search through {@link #listFiles()} for the first document matching the
      * given display name. Returns {@code null} when no matching document is
      * found.

@@ -202,6 +202,11 @@ public class MediaFile extends UniFile {
     }
 
     @Override
+    public UniFile[] listFiles(FilenameFilter filter) {
+        return null;
+    }
+
+    @Override
     public UniFile findFile(String displayName) {
         return null;
     }

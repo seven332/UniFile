@@ -163,6 +163,24 @@ class RawFile extends UniFile {
     }
 
     @Override
+    public UniFile[] listFiles(FilenameFilter filter) {
+        if (null == filter) {
+            return listFiles();
+        }
+
+        final ArrayList<UniFile> results = new ArrayList<>();
+        final File[] files = mFile.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (filter.accept(this, file.getName())) {
+                    results.add(new RawFile(this, file));
+                }
+            }
+        }
+        return results.toArray(new UniFile[results.size()]);
+    }
+
+    @Override
     public UniFile findFile(String displayName) {
         final File child = new File(mFile, displayName);
         return child.exists() ? new RawFile(this, child) : null;
