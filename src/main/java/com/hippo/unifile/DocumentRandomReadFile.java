@@ -21,14 +21,14 @@ import com.hippo.yorozuya.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class DocumentRandomReadFile extends UniRandomReadFile {
+class DocumentRandomReadFile extends UniRandomReadFile {
 
-    private DocumentFile mDocumentFile;
+    private UniFile mDocumentFile;
     private InputStream mInputStream;
     private long position;
 
-    public DocumentRandomReadFile(DocumentFile documentFile) throws IOException {
-        mDocumentFile =documentFile;
+    public DocumentRandomReadFile(UniFile documentFile) throws IOException {
+        mDocumentFile = documentFile;
         mInputStream = documentFile.openInputStream();
         position = 0;
     }

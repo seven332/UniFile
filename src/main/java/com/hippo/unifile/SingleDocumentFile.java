@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Hippo Seven
+ * Copyright 2016 Hippo Seven
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,21 @@
 
 package com.hippo.unifile;
 
-import android.content.ContentResolver;
 import android.content.Context;
-import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-
-import com.hippo.yorozuya.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class MediaFile extends UniFile {
+public class SingleDocumentFile extends UniFile {
 
     private final Context mContext;
     private final Uri mUri;
 
-    MediaFile(Context context, Uri uri) {
-        super(null);
-
+    SingleDocumentFile(UniFile parent, Context context, Uri uri) {
+        super(parent);
         mContext = context.getApplicationContext();
         mUri = uri;
     }
@@ -58,117 +50,44 @@ public class MediaFile extends UniFile {
         return mUri;
     }
 
-    public static String getPath(Context context, Uri uri) {
-        String path = null;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            // Will return "image:x*"
-            String wholeID = null;
-            try {
-                wholeID = DocumentsContract.getDocumentId(uri);
-            } catch (Exception e) {
-                // Ignore;
-            }
-            if (wholeID != null) {
-                String id;
-                int index = wholeID.indexOf(':');
-                if (index < 0) {
-                    id = wholeID;
-                } else {
-                    id = wholeID.substring(index + 1);
-                }
-                String[] column = {MediaStore.Images.Media.DATA};
-                // where id is equal to
-                String sel = MediaStore.Images.Media._ID + "=?";
-                Cursor cursor = null;
-                try {
-                    cursor = context.getContentResolver().
-                            query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                                    column, sel, new String[]{id}, null);
-                    if (cursor != null) {
-                        int columnIndex = cursor.getColumnIndex(column[0]);
-                        if (cursor.moveToFirst()) {
-                            path = cursor.getString(columnIndex);
-                        }
-                    }
-                } catch (Exception e) {
-                    // Ignore
-                } finally {
-                    IOUtils.closeQuietly(cursor);
-                }
-            }
-        }
-
-        if (path == null) {
-            String[] projection = {MediaStore.MediaColumns.DATA};
-            ContentResolver cr = context.getContentResolver();
-            Cursor cursor = null;
-            try {
-                cursor = cr.query(uri, projection, null, null, null);
-                if (cursor != null) {
-                    if (cursor.moveToFirst()) {
-                        path = cursor.getString(0);
-                    }
-                }
-            } catch (Exception e) {
-                // Ignore
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            }
-        }
-
-        return path;
-    }
-
     @Override
     public String getName() {
-        String path = getPath(mContext, mUri);
-        if (path == null) {
-            return null;
-        }
-        int index = path.lastIndexOf('/');
-        if (index < 0) {
-            return path;
-        } else {
-            return path.substring(index + 1);
-        }
+        return DocumentsContractApi19.getName(mContext, mUri);
     }
 
     @Override
     public String getType() {
-        return mContext.getContentResolver().getType(mUri);
+        return DocumentsContractApi19.getType(mContext, mUri);
     }
 
     @Override
     public boolean isDirectory() {
-        throw new UnsupportedOperationException();
+        return DocumentsContractApi19.isDirectory(mContext, mUri);
     }
 
     @Override
     public boolean isFile() {
-        throw new UnsupportedOperationException();
+        return DocumentsContractApi19.isFile(mContext, mUri);
     }
 
     @Override
     public long lastModified() {
-        throw new UnsupportedOperationException();
+        return DocumentsContractApi19.lastModified(mContext, mUri);
     }
 
     @Override
     public long length() {
-        throw new UnsupportedOperationException();
+        return DocumentsContractApi19.length(mContext, mUri);
     }
 
     @Override
     public boolean canRead() {
-        throw new UnsupportedOperationException();
+        return DocumentsContractApi19.canRead(mContext, mUri);
     }
 
     @Override
     public boolean canWrite() {
-        throw new UnsupportedOperationException();
+        return DocumentsContractApi19.canWrite(mContext, mUri);
     }
 
     @Override
@@ -188,12 +107,12 @@ public class MediaFile extends UniFile {
 
     @Override
     public boolean delete() {
-        throw new UnsupportedOperationException();
+        return DocumentsContractApi19.delete(mContext, mUri);
     }
 
     @Override
     public boolean exists() {
-        throw new UnsupportedOperationException();
+        return DocumentsContractApi19.exists(mContext, mUri);
     }
 
     @Override
@@ -203,7 +122,7 @@ public class MediaFile extends UniFile {
 
     @Override
     public UniFile[] listFiles(FilenameFilter filter) {
-        throw new UnsupportedOperationException();
+        return new UniFile[0];
     }
 
     @Override
@@ -249,6 +168,6 @@ public class MediaFile extends UniFile {
     @NonNull
     @Override
     public UniRandomReadFile createRandomReadFile() throws IOException {
-        throw new IOException("Can't create random read file");
+        return new DocumentRandomReadFile(this);
     }
 }

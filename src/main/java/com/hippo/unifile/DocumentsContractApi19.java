@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 The Android Open Source Project
+ * Copyright (C) 2014 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,10 @@ import android.text.TextUtils;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 class DocumentsContractApi19 {
-    private static final String TAG = "UniFile";
+
+    public static boolean isDocumentUri(Context context, Uri self) {
+        return DocumentsContract.isDocumentUri(context, self);
+    }
 
     public static String getName(Context context, Uri self) {
         return queryForString(context, self, DocumentsContract.Document.COLUMN_DISPLAY_NAME, null);

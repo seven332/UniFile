@@ -27,19 +27,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-class DocumentFile extends UniFile {
+class TreeDocumentFile extends UniFile {
 
     private final Context mContext;
     private Uri mUri;
     private String mFilename;
 
-    DocumentFile(UniFile parent, Context context, Uri uri) {
+    TreeDocumentFile(UniFile parent, Context context, Uri uri) {
         super(parent);
         mContext = context.getApplicationContext();
         mUri = uri;
     }
 
-    DocumentFile(UniFile parent, Context context, Uri uri, String filename) {
+    TreeDocumentFile(UniFile parent, Context context, Uri uri, String filename) {
         super(parent);
         mContext = context.getApplicationContext();
         mUri = uri;
@@ -64,13 +64,13 @@ class DocumentFile extends UniFile {
                 String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
                 if (!TextUtils.isEmpty(mimeType)) {
                     final Uri result = DocumentsContractApi21.createFile(mContext, mUri, mimeType, name);
-                    return (result != null) ? new DocumentFile(this, mContext, result, displayName) : null;
+                    return (result != null) ? new TreeDocumentFile(this, mContext, result, displayName) : null;
                 }
             }
 
             // Not dot in displayName or dot is the first char or can't get MimeType
             final Uri result = DocumentsContractApi21.createFile(mContext, mUri, "application/octet-stream", displayName);
-            return (result != null) ? new DocumentFile(this, mContext, result, displayName) : null;
+            return (result != null) ? new TreeDocumentFile(this, mContext, result, displayName) : null;
         }
     }
 
@@ -86,7 +86,7 @@ class DocumentFile extends UniFile {
             }
         } else {
             final Uri result = DocumentsContractApi21.createDirectory(mContext, mUri, displayName);
-            return (result != null) ? new DocumentFile(this, mContext, result, displayName) : null;
+            return (result != null) ? new TreeDocumentFile(this, mContext, result, displayName) : null;
         }
     }
 
@@ -170,7 +170,7 @@ class DocumentFile extends UniFile {
     @Override
     public UniFile subFile(String displayName) {
         Uri childUri = DocumentsContractApi21.buildChildUri(mUri, displayName);
-        return new DocumentFile(this, mContext, childUri, displayName);
+        return new TreeDocumentFile(this, mContext, childUri, displayName);
     }
 
     @Override
@@ -200,7 +200,7 @@ class DocumentFile extends UniFile {
         final UniFile[] resultFiles = new UniFile[result.length];
         for (int i = 0, n = result.length; i < n; i++) {
             Uri uri = result[i];
-            resultFiles[i] = new DocumentFile(this, mContext, uri, getFilenameForUri(uri));
+            resultFiles[i] = new TreeDocumentFile(this, mContext, uri, getFilenameForUri(uri));
         }
         return resultFiles;
     }
@@ -217,7 +217,7 @@ class DocumentFile extends UniFile {
             Uri uri = result[i];
             String name = getFilenameForUri(uri);
             if (filter.accept(this, name)) {
-                results.add(new DocumentFile(this, mContext, uri, name));
+                results.add(new TreeDocumentFile(this, mContext, uri, name));
             }
         }
         return results.toArray(new UniFile[results.size()]);
@@ -227,7 +227,7 @@ class DocumentFile extends UniFile {
     public UniFile findFile(String displayName) {
         Uri childUri = DocumentsContractApi21.buildChildUri(mUri, displayName);
         return DocumentsContractApi19.exists(mContext, childUri) ?
-                new DocumentFile(this, mContext, childUri, displayName) : null;
+                new TreeDocumentFile(this, mContext, childUri, displayName) : null;
     }
 
     @Override

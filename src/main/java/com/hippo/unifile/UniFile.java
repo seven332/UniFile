@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -96,8 +97,28 @@ public abstract class UniFile {
      * {@link #getUri()} will return {@code file://} Uris for files explored
      * through this tree.
      */
-    public static UniFile fromFile(File file) {
+    @Nullable
+    public static UniFile fromFile(@Nullable File file) {
         return file != null ? new RawFile(null, file) : null;
+    }
+
+    /**
+     * Create a {@link UniFile} representing the single document at the
+     * given {@link Uri}. This is only useful on devices running
+     * {@link android.os.Build.VERSION_CODES#KITKAT} or later, and will return
+     * {@code null} when called on earlier platform versions.
+     *
+     * @param singleUri the {@link Intent#getData()} from a successful
+     *            {@link Intent#ACTION_OPEN_DOCUMENT} or
+     *            {@link Intent#ACTION_CREATE_DOCUMENT} request.
+     */
+    public static UniFile fromSingleUri(Context context, Uri singleUri) {
+        final int version = Build.VERSION.SDK_INT;
+        if (version >= 19) {
+            return new SingleDocumentFile(null, context, singleUri);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -112,7 +133,7 @@ public abstract class UniFile {
     public static UniFile fromTreeUri(Context context, Uri treeUri) {
         final int version = Build.VERSION.SDK_INT;
         if (version >= 21) {
-            return new DocumentFile(null, context,
+            return new TreeDocumentFile(null, context,
                     DocumentsContractApi21.prepareTreeUri(treeUri));
         } else {
             return null;
@@ -128,8 +149,12 @@ public abstract class UniFile {
     public static UniFile fromUri(Context context, Uri uri) {
         if (isFileUri(uri)) {
             return fromFile(new File(uri.getPath()));
-        } else if (isTreeUri(uri)) {
-            return fromTreeUri(context, uri);
+        } else if (isDocumentUri(context, uri)) {
+            if (isTreeUri(uri)) {
+                return fromTreeUri(context, uri);
+            } else {
+                return fromSingleUri(context, uri);
+            }
         } else {
             String name = MediaFile.getPath(context, uri);
             if (!TextUtils.isEmpty(name)) {
@@ -145,6 +170,19 @@ public abstract class UniFile {
      */
     public static boolean isFileUri(Uri uri) {
         return uri != null && ContentResolver.SCHEME_FILE.equals(uri.getScheme());
+    }
+
+    /**
+     * Test if given Uri is backed by a
+     * {@link android.provider.DocumentsProvider}.
+     */
+    public static boolean isDocumentUri(Context context, Uri uri) {
+        final int version = Build.VERSION.SDK_INT;
+        if (version >= 19) {
+            return DocumentsContractApi19.isDocumentUri(context, uri);
+        } else {
+            return false;
+        }
     }
 
     /**
