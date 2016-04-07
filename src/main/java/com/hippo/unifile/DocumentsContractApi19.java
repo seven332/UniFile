@@ -35,11 +35,11 @@ class DocumentsContractApi19 {
     }
 
     public static String getName(Context context, Uri self) {
-        return queryForString(context, self, DocumentsContract.Document.COLUMN_DISPLAY_NAME, null);
+        return Contracts.queryForString(context, self, DocumentsContract.Document.COLUMN_DISPLAY_NAME, null);
     }
 
     private static String getRawType(Context context, Uri self) {
-        return queryForString(context, self, DocumentsContract.Document.COLUMN_MIME_TYPE, null);
+        return Contracts.queryForString(context, self, DocumentsContract.Document.COLUMN_MIME_TYPE, null);
     }
 
     public static String getType(Context context, Uri self) {
@@ -61,11 +61,11 @@ class DocumentsContractApi19 {
     }
 
     public static long lastModified(Context context, Uri self) {
-        return queryForLong(context, self, DocumentsContract.Document.COLUMN_LAST_MODIFIED, 0);
+        return Contracts.queryForLong(context, self, DocumentsContract.Document.COLUMN_LAST_MODIFIED, 0);
     }
 
     public static long length(Context context, Uri self) {
-        return queryForLong(context, self, DocumentsContract.Document.COLUMN_SIZE, 0);
+        return Contracts.queryForLong(context, self, DocumentsContract.Document.COLUMN_SIZE, 0);
     }
 
     public static boolean canRead(Context context, Uri self) {
@@ -87,7 +87,7 @@ class DocumentsContractApi19 {
         }
 
         final String type = getRawType(context, self);
-        final int flags = queryForInt(context, self, DocumentsContract.Document.COLUMN_FLAGS, 0);
+        final int flags = Contracts.queryForInt(context, self, DocumentsContract.Document.COLUMN_FLAGS, 0);
 
         // Ignore documents without MIME
         if (TextUtils.isEmpty(type)) {
@@ -123,68 +123,12 @@ class DocumentsContractApi19 {
         try {
             c = resolver.query(self, new String[] {
                     DocumentsContract.Document.COLUMN_DOCUMENT_ID }, null, null, null);
-            return c.getCount() > 0;
+            return null != c && c.getCount() > 0;
         } catch (Exception e) {
             // Log.w(TAG, "Failed query: " + e);
             return false;
         } finally {
-            closeQuietly(c);
-        }
-    }
-
-    private static String queryForString(Context context, Uri self, String column,
-            String defaultValue) {
-        final ContentResolver resolver = context.getContentResolver();
-
-        Cursor c = null;
-        try {
-            c = resolver.query(self, new String[] { column }, null, null, null);
-            if (c.moveToFirst() && !c.isNull(0)) {
-                return c.getString(0);
-            } else {
-                return defaultValue;
-            }
-        } catch (Exception e) {
-            // Log.w(TAG, "Failed query: " + e);
-            return defaultValue;
-        } finally {
-            closeQuietly(c);
-        }
-    }
-
-    private static int queryForInt(Context context, Uri self, String column,
-            int defaultValue) {
-        return (int) queryForLong(context, self, column, defaultValue);
-    }
-
-    private static long queryForLong(Context context, Uri self, String column,
-            long defaultValue) {
-        final ContentResolver resolver = context.getContentResolver();
-
-        Cursor c = null;
-        try {
-            c = resolver.query(self, new String[] { column }, null, null, null);
-            if (c.moveToFirst() && !c.isNull(0)) {
-                return c.getLong(0);
-            } else {
-                return defaultValue;
-            }
-        } catch (Exception e) {
-            // Log.w(TAG, "Failed query: " + e);
-            return defaultValue;
-        } finally {
-            closeQuietly(c);
-        }
-    }
-
-    private static void closeQuietly(AutoCloseable closeable) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (RuntimeException rethrown) {
-                throw rethrown;
-            } catch (Exception ignored) {
-            }
+            Contracts.closeQuietly(c);
         }
     }
 }

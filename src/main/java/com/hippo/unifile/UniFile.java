@@ -23,7 +23,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -155,13 +154,10 @@ public abstract class UniFile {
             } else {
                 return fromSingleUri(context, uri);
             }
+        } else if (MediaFile.isMediaUri(context, uri)) {
+            return new MediaFile(context, uri);
         } else {
-            String name = MediaFile.getPath(context, uri);
-            if (!TextUtils.isEmpty(name)) {
-                return new MediaFile(context, uri);
-            } else {
-                return null;
-            }
+            return null;
         }
     }
 

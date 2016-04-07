@@ -29,7 +29,7 @@ import java.util.List;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class DocumentsContractApi21 {
-    private static final String TAG = "UniFile";
+    private static final String TAG = DocumentsContractApi21.class.getSimpleName();
 
     private static final String PATH_DOCUMENT = "document";
     private static final String PATH_TREE = "tree";
@@ -72,11 +72,13 @@ class DocumentsContractApi21 {
         try {
             c = resolver.query(childrenUri, new String[] {
                     DocumentsContract.Document.COLUMN_DOCUMENT_ID }, null, null, null);
-            while (c.moveToNext()) {
-                final String documentId = c.getString(0);
-                final Uri documentUri = DocumentsContract.buildDocumentUriUsingTree(self,
-                        documentId);
-                results.add(documentUri);
+            if (null != c) {
+                while (c.moveToNext()) {
+                    final String documentId = c.getString(0);
+                    final Uri documentUri = DocumentsContract.buildDocumentUriUsingTree(self,
+                            documentId);
+                    results.add(documentUri);
+                }
             }
         } catch (Exception e) {
             // Log.w(TAG, "Failed query: " + e);
