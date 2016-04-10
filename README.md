@@ -40,7 +40,7 @@ Add RefreshLayout as dependency in project `build.gradle`.
 
     dependencies {
         ...
-        compile 'com.github.seven332:refreshlayout:0.1.0'
+        compile 'com.github.seven332:unifile:0.1.0'
     }
 
 
