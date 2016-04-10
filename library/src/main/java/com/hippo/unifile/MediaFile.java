@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class MediaFile extends UniFile {
+class MediaFile extends UniFile {
 
     private final Context mContext;
     private final Uri mUri;

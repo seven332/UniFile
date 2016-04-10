@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class SingleDocumentFile extends UniFile {
+class SingleDocumentFile extends UniFile {
 
     private final Context mContext;
     private final Uri mUri;

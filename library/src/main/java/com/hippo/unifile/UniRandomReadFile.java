@@ -21,7 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-public abstract class UniRandomReadFile implements Closeable {
+abstract class UniRandomReadFile implements Closeable {
 
     public int read(byte[] buffer) throws IOException {
         return read(buffer, 0, buffer.length);

@@ -3,8 +3,7 @@ package com.hippo.unifile;
 import java.io.Closeable;
 import java.io.IOException;
 
-public final class IOUtils {
-    private IOUtils() {}
+class IOUtils {
 
     /**
      * Close the closeable stuff. Don't worry about anything.
