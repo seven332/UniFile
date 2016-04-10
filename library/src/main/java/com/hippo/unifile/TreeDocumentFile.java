@@ -91,6 +91,7 @@ class TreeDocumentFile extends UniFile {
     }
 
     @Override
+    @NonNull
     public Uri getUri() {
         return mUri;
     }

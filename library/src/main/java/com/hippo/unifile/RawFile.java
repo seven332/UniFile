@@ -47,12 +47,15 @@ class RawFile extends UniFile {
                 return null;
             }
         } else {
+            InputStream is = null;
             try {
-                target.createNewFile();
+                is = new FileInputStream(target);
                 return new RawFile(this, target);
             } catch (IOException e) {
                 Log.w(TAG, "Failed to createFile " + displayName + ": " + e);
                 return null;
+            } finally {
+                IOUtils.closeQuietly(is);
             }
         }
     }
@@ -68,6 +71,7 @@ class RawFile extends UniFile {
     }
 
     @Override
+    @NonNull
     public Uri getUri() {
         return Uri.fromFile(mFile);
     }
@@ -198,22 +202,26 @@ class RawFile extends UniFile {
     }
 
     @Override
-    public @NonNull OutputStream openOutputStream() throws IOException {
+    @NonNull
+    public OutputStream openOutputStream() throws IOException {
         return new FileOutputStream(mFile);
     }
 
     @Override
-    public @NonNull OutputStream openOutputStream(boolean append) throws IOException {
+    @NonNull
+    public OutputStream openOutputStream(boolean append) throws IOException {
         return new FileOutputStream(mFile, append);
     }
 
     @Override
-    public @NonNull InputStream openInputStream() throws IOException {
+    @NonNull
+    public InputStream openInputStream() throws IOException {
         return new FileInputStream(mFile);
     }
 
     @Override
-    public @NonNull UniRandomReadFile createRandomReadFile() throws IOException {
+    @NonNull
+    public UniRandomReadFile createRandomReadFile() throws IOException {
         return new RawRandomReadFile(mFile);
     }
 

@@ -61,11 +61,11 @@ class DocumentsContractApi19 {
     }
 
     public static long lastModified(Context context, Uri self) {
-        return Contracts.queryForLong(context, self, DocumentsContract.Document.COLUMN_LAST_MODIFIED, 0);
+        return Contracts.queryForLong(context, self, DocumentsContract.Document.COLUMN_LAST_MODIFIED, -1L);
     }
 
     public static long length(Context context, Uri self) {
-        return Contracts.queryForLong(context, self, DocumentsContract.Document.COLUMN_SIZE, 0);
+        return Contracts.queryForLong(context, self, DocumentsContract.Document.COLUMN_SIZE, -1L);
     }
 
     public static boolean canRead(Context context, Uri self) {

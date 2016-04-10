@@ -16,7 +16,6 @@
 
 package com.hippo.unifile;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -60,7 +59,7 @@ class DocumentRandomReadFile extends UniRandomReadFile {
 
         long actuallySkip;
         if (offset < position) {
-            closeQuietly(is);
+            IOUtils.closeQuietly(is);
             mInputStream = mDocumentFile.openInputStream();
             actuallySkip = mInputStream.skip(offset);
             position = actuallySkip;
@@ -83,21 +82,6 @@ class DocumentRandomReadFile extends UniRandomReadFile {
     @Override
     public void close() throws IOException {
         mDocumentFile = null;
-        closeQuietly(mInputStream);
-    }
-
-    /**
-     * Close the closeable stuff. Don't worry about anything.
-     *
-     * @param is the closeable stuff
-     */
-    public static void closeQuietly(Closeable is) {
-        if (is != null) {
-            try {
-                is.close();
-            } catch (IOException e) {
-                // Ignore
-            }
-        }
+        IOUtils.closeQuietly(mInputStream);
     }
 }

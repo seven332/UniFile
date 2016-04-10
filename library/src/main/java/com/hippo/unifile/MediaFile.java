@@ -38,15 +38,16 @@ public class MediaFile extends UniFile {
 
     @Override
     public UniFile createFile(String displayName) {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override
     public UniFile createDirectory(String displayName) {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override
+    @NonNull
     public Uri getUri() {
         return mUri;
     }
@@ -107,7 +108,7 @@ public class MediaFile extends UniFile {
 
     @Override
     public UniFile subFile(String displayName) {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override
@@ -122,17 +123,17 @@ public class MediaFile extends UniFile {
 
     @Override
     public UniFile[] listFiles() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override
     public UniFile[] listFiles(FilenameFilter filter) {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override
     public UniFile findFile(String displayName) {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override
