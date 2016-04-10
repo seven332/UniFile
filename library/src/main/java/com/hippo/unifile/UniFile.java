@@ -31,53 +31,8 @@ import java.io.OutputStream;
 import java.util.List;
 
 /**
- * Representation of a document backed by either a
- * {@link android.provider.DocumentsProvider} or a raw file on disk. This is a
- * utility class designed to emulate the traditional {@link File} interface. It
- * offers a simplified view of a tree of documents, but it has substantial
- * overhead. For optimal performance and a richer feature set, use the
- * {@link android.provider.DocumentsContract} methods and constants directly.
- * <p>
- * There are several differences between documents and traditional files:
- * <ul>
- * <li>Documents express their display name and MIME type as separate fields,
- * instead of relying on file extensions. Some documents providers may still
- * choose to append extensions to their display names, but that's an
- * implementation detail.
- * <li>A single document may appear as the child of multiple directories, so it
- * doesn't inherently know who its parent is. That is, documents don't have a
- * strong notion of path. You can easily traverse a tree of documents from
- * parent to child, but not from child to parent.
- * <li>Each document has a unique identifier within that provider. This
- * identifier is an <em>opaque</em> implementation detail of the provider, and
- * as such it must not be parsed.
- * </ul>
- * <p>
- * Before using this class, first consider if you really need access to an
- * entire subtree of documents. The principle of least privilege dictates that
- * you should only ask for access to documents you really need. If you only need
- * the user to pick a single file, use {@link Intent#ACTION_OPEN_DOCUMENT} or
- * {@link Intent#ACTION_GET_CONTENT}. If you want to let the user pick multiple
- * files, add {@link Intent#EXTRA_ALLOW_MULTIPLE}. If you only need the user to
- * save a single file, use {@link Intent#ACTION_CREATE_DOCUMENT}.
- * <p>
- * If you really do need full access to an entire subtree of documents, start by
- * launching {@link Intent#ACTION_OPEN_DOCUMENT_TREE} to let the user pick a
- * directory. Then pass the resulting {@link Intent#getData()} into
- * {@link #fromTreeUri(Context, Uri)} to start working with the user selected
- * tree.
- * <p>
- * As you navigate the tree of UniFile instances, you can always use
- * {@link #getUri()} to obtain the Uri representing the underlying document for
- * that object, for use with {@link ContentResolver#openInputStream(Uri)}, etc.
- * <p>
- * To simplify your code on devices running
- * {@link Build.VERSION_CODES#KITKAT} or earlier, you can use
- * {@link #fromFile(File)} which emulates the behavior of a
- * {@link android.provider.DocumentsProvider}.
- *
- * @see android.provider.DocumentsProvider
- * @see android.provider.DocumentsContract
+ * In Android files can be accessed via {@link java.io.File} and {@link android.net.Uri}.
+ * The UniFile is designed to emulate File interface for both File and Uri.
  */
 public abstract class UniFile {
     static final String TAG = "UniFile";
@@ -89,12 +44,10 @@ public abstract class UniFile {
     }
 
     /**
-     * Create a {@link UniFile} representing the filesystem tree rooted at
-     * the given {@link Uri}. This doesn't give you any additional access to the
-     * underlying files beyond what your app already has.
-     * <p>
-     * {@link #getUri()} will return {@code file://} Uris for files explored
-     * through this tree.
+     * Create a {@link UniFile} representing the given {@link File}.
+
+     * @param file the file to wrap
+     * @return the {@link UniFile} representing the given {@link File}.
      */
     @Nullable
     public static UniFile fromFile(@Nullable File file) {
@@ -110,6 +63,7 @@ public abstract class UniFile {
      * @param singleUri the {@link Intent#getData()} from a successful
      *            {@link Intent#ACTION_OPEN_DOCUMENT} or
      *            {@link Intent#ACTION_CREATE_DOCUMENT} request.
+     * @return the {@link UniFile} representing the given {@link Uri}.
      */
     public static UniFile fromSingleUri(Context context, Uri singleUri) {
         final int version = Build.VERSION.SDK_INT;
@@ -128,6 +82,7 @@ public abstract class UniFile {
      *
      * @param treeUri the {@link Intent#getData()} from a successful
      *            {@link Intent#ACTION_OPEN_DOCUMENT_TREE} request.
+     * @return the {@link UniFile} representing the given {@link Uri}.
      */
     public static UniFile fromTreeUri(Context context, Uri treeUri) {
         final int version = Build.VERSION.SDK_INT;
@@ -137,6 +92,17 @@ public abstract class UniFile {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Create a {@link UniFile} representing the media file rooted at
+     * the given {@link Uri}.
+     *
+     * @param mediaUri the media uri to wrap
+     * @return the {@link UniFile} representing the given {@link Uri}.
+     */
+    public static UniFile fromMediaUri(Context context, Uri mediaUri) {
+        return new MediaFile(context, mediaUri);
     }
 
     /**
@@ -194,11 +160,9 @@ public abstract class UniFile {
     }
 
     /**
-     * Create a new document as a direct child of this directory.
+     * Create a new file as a direct child of this directory.
      *
-     * @param displayName name of new document, without any file extension
-     *            appended; the underlying provider may choose to append the
-     *            extension
+     * @param displayName name of new file
      * @return file representing newly created document, or null if failed
      * @see android.provider.DocumentsContract#createDocument(ContentResolver,
      *      Uri, String, String)
@@ -222,37 +186,46 @@ public abstract class UniFile {
      * test if the returned Uri is backed by a
      * {@link android.provider.DocumentsProvider}.
      *
+     * @return uri of the file
      * @see Intent#setData(Uri)
      * @see Intent#setClipData(android.content.ClipData)
      * @see ContentResolver#openInputStream(Uri)
      * @see ContentResolver#openOutputStream(Uri)
      * @see ContentResolver#openFileDescriptor(Uri, String)
      */
+    @NonNull
     public abstract Uri getUri();
 
     /**
-     * Return the display name of this document.
+     * Return the display name of this file.
      *
+     * @return name of the file, or null if failed
      * @see android.provider.DocumentsContract.Document#COLUMN_DISPLAY_NAME
      */
+    @Nullable
     public abstract String getName();
 
     /**
-     * Return the MIME type of this document.
+     * Return the MIME type of this file.
      *
+     * @return MIME type of the file, or null if failed
      * @see android.provider.DocumentsContract.Document#COLUMN_MIME_TYPE
      */
+    @Nullable
     public abstract String getType();
 
     /**
-     * Return the parent file of this document. Only defined inside of the
+     * Return the parent file of this file. Only defined inside of the
      * user-selected tree; you can never escape above the top of the tree.
      * <p>
      * The underlying {@link android.provider.DocumentsProvider} only defines a
      * forward mapping from parent to child, so the reverse mapping of child to
      * parent offered here is purely a convenience method, and it may be
      * incorrect if the underlying tree structure changes.
+     *
+     * @return parent of the file, or null if it is the top of the file tree
      */
+    @Nullable
     public UniFile getParentFile() {
         return mParent;
     }
@@ -276,20 +249,20 @@ public abstract class UniFile {
 
     /**
      * Returns the time when this file was last modified, measured in
-     * milliseconds since January 1st, 1970, midnight. Returns 0 if the file
+     * milliseconds since January 1st, 1970, midnight. Returns -1 if the file
      * does not exist, or if the modified time is unknown.
      *
-     * @return the time when this file was last modified.
+     * @return the time when this file was last modified, <code>-1L</code> if can't get it
      * @see android.provider.DocumentsContract.Document#COLUMN_LAST_MODIFIED
      */
     public abstract long lastModified();
 
     /**
-     * Returns the length of this file in bytes. Returns 0 if the file does not
+     * Returns the length of this file in bytes. Returns -1 if the file does not
      * exist, or if the length is unknown. The result for a directory is not
      * defined.
      *
-     * @return the number of bytes in this file.
+     * @return the number of bytes in this file, <code>-1L</code> if can't get it
      * @see android.provider.DocumentsContract.Document#COLUMN_SIZE
      */
     public abstract long length();
@@ -323,14 +296,18 @@ public abstract class UniFile {
 
     /**
      * Make sure the UniFile is file
+     *
+     * @return {@code true} if the file can be created
+     *         or if the file already existed.
      */
     public abstract boolean ensureFile();
 
     /**
-     * Get subFile of this UniFile
+     * Get child file of this directory, the child might not exist.
      *
-     * @return the subFile
+     * @return the child file, {@code null} if not supported
      */
+    @Nullable
     public abstract UniFile subFile(String displayName);
 
     /**
@@ -360,6 +337,7 @@ public abstract class UniFile {
      * @see android.provider.DocumentsContract#buildChildDocumentsUriUsingTree(Uri,
      *      String)
      */
+    @Nullable
     public abstract UniFile[] listFiles();
 
     /**
@@ -370,13 +348,15 @@ public abstract class UniFile {
      * @param filter the filter to match names against, may be {@code null}.
      * @return an array of files or {@code null}.
      */
+    @Nullable
     public abstract UniFile[] listFiles(FilenameFilter filter);
 
     /**
-     * Search through {@link #listFiles()} for the first document matching the
-     * given display name. Returns {@code null} when no matching document is
-     * found.
+     * Test there is a file with the display name in the directory.
+     *
+     * @return the file if found it, or {@code null}.
      */
+    @Nullable
     public abstract UniFile findFile(String displayName);
 
     /**
@@ -385,7 +365,7 @@ public abstract class UniFile {
      * Note that this method does <i>not</i> throw {@code IOException} on
      * failure. Callers must check the return value.
      * <p>
-     * Some providers may need to create a new document to reflect the rename,
+     * Some providers may need to create a new file to reflect the rename,
      * potentially with a different MIME type, so {@link #getUri()} and
      * {@link #getType()} may change to reflect the rename.
      * <p>
@@ -405,7 +385,8 @@ public abstract class UniFile {
      * @return the {@link OutputStream}
      * @throws IOException
      */
-    public abstract @NonNull OutputStream openOutputStream() throws IOException;
+    @NonNull
+    public abstract OutputStream openOutputStream() throws IOException;
 
     /**
      * Open a stream on to the content associated with the file
@@ -414,7 +395,8 @@ public abstract class UniFile {
      * @return the {@link OutputStream}
      * @throws IOException
      */
-    public abstract @NonNull OutputStream openOutputStream(boolean append) throws IOException;
+    @NonNull
+    public abstract OutputStream openOutputStream(boolean append) throws IOException;
 
     /**
      * Open a stream on to the content associated with the file
@@ -422,7 +404,8 @@ public abstract class UniFile {
      * @return the {@link InputStream}
      * @throws IOException
      */
-    public abstract @NonNull InputStream openInputStream() throws IOException;
+    @NonNull
+    public abstract InputStream openInputStream() throws IOException;
 
     /**
      * Get a random read stuff of the UniFile
@@ -430,5 +413,6 @@ public abstract class UniFile {
      * @return the random read stuff
      * @throws IOException
      */
-    public abstract @NonNull UniRandomReadFile createRandomReadFile() throws IOException;
+    @NonNull
+    public abstract UniRandomReadFile createRandomReadFile() throws IOException;
 }
