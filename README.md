@@ -10,7 +10,7 @@ UniFile 是基于 `android.support.v4.provider.DocumentFile`，而且更好用�
 * 删除了 createFile 中 mimeType 参数
 * 修改 createFile，createDirectory 特性，避免出现文件名后添加 (1) 的现象
 
-The RefreshLayout is forked from `android.support.v4.provider.DocumentFile`, but more powerful.
+The UniFile is forked from `android.support.v4.provider.DocumentFile`, but more powerful.
 
 The differences:
 * Add listFiles(FilenameFilter)
@@ -36,7 +36,7 @@ Add jitpack repository in top `build.gradle`, DO **NOT** ADD IT TO buildscript.
 
 在项目 `build.gradle` 里添加 RefreshLayout 依赖。
 
-Add RefreshLayout as dependency in project `build.gradle`.
+Add UniFile as dependency in project `build.gradle`.
 
     dependencies {
         ...
