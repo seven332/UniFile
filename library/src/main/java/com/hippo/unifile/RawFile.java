@@ -47,15 +47,15 @@ class RawFile extends UniFile {
                 return null;
             }
         } else {
-            InputStream is = null;
+            OutputStream os = null;
             try {
-                is = new FileInputStream(target);
+                os = new FileOutputStream(target);
                 return new RawFile(this, target);
             } catch (IOException e) {
                 Log.w(TAG, "Failed to createFile " + displayName + ": " + e);
                 return null;
             } finally {
-                IOUtils.closeQuietly(is);
+                IOUtils.closeQuietly(os);
             }
         }
     }
