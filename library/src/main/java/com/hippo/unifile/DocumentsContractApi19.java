@@ -26,9 +26,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.DocumentsContract;
 import android.text.TextUtils;
+import android.util.Log;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 class DocumentsContractApi19 {
+
+    private static final String TAG = DocumentsContractApi19.class.getSimpleName();
 
     public static boolean isDocumentUri(Context context, Uri self) {
         return DocumentsContract.isDocumentUri(context, self);
@@ -113,7 +116,13 @@ class DocumentsContractApi19 {
     }
 
     public static boolean delete(Context context, Uri self) {
-        return DocumentsContract.deleteDocument(context.getContentResolver(), self);
+        try {
+            return DocumentsContract.deleteDocument(context.getContentResolver(), self);
+        } catch (SecurityException e) {
+            // Maybe user ejects tf card
+            Log.e(TAG, "Failed to renameTo", e);
+            return false;
+        }
     }
 
     public static boolean exists(Context context, Uri self) {

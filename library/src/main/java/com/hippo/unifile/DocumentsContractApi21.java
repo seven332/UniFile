@@ -23,6 +23,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.DocumentsContract;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +37,14 @@ class DocumentsContractApi21 {
 
     public static Uri createFile(Context context, Uri self, String mimeType,
             String displayName) {
-        return DocumentsContract.createDocument(context.getContentResolver(), self, mimeType,
-                displayName);
+        try {
+            return DocumentsContract.createDocument(context.getContentResolver(), self, mimeType,
+                    displayName);
+        } catch (SecurityException e) {
+            // Maybe user ejects tf card
+            Log.e(TAG, "Failed to createFile", e);
+            return null;
+        }
     }
 
     public static Uri createDirectory(Context context, Uri self, String displayName) {
@@ -90,7 +97,13 @@ class DocumentsContractApi21 {
     }
 
     public static Uri renameTo(Context context, Uri self, String displayName) {
-        return DocumentsContract.renameDocument(context.getContentResolver(), self, displayName);
+        try {
+            return DocumentsContract.renameDocument(context.getContentResolver(), self, displayName);
+        } catch (SecurityException e) {
+            // Maybe user ejects tf card
+            Log.e(TAG, "Failed to renameTo", e);
+            return null;
+        }
     }
 
     private static void closeQuietly(AutoCloseable closeable) {
