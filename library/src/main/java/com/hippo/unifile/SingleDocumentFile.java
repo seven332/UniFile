@@ -185,6 +185,10 @@ class SingleDocumentFile extends UniFile {
     @NonNull
     @Override
     public RandomAccessFile createRandomAccessFile(String mode) throws IOException {
+        // Check file
+        if (!ensureFile()) {
+            throw new IOException("Can't make sure it is file");
+        }
         return DocumentRandomAccessFile.create(mContext, mUri, mode);
     }
 }
