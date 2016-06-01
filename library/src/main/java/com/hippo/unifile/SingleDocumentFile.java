@@ -94,12 +94,27 @@ class SingleDocumentFile extends UniFile {
 
     @Override
     public boolean ensureDir() {
-        throw new UnsupportedOperationException();
+        return isDirectory();
     }
 
     @Override
     public boolean ensureFile() {
-        throw new UnsupportedOperationException();
+        if (isFile()) {
+            return true;
+        } else {
+            OutputStream os;
+            try {
+                os = openOutputStream();
+            } catch (IOException e) {
+                return false;
+            }
+            try {
+                os.close();
+            } catch (IOException e) {
+                // Ignore
+            }
+            return true;
+        }
     }
 
     @Override
@@ -134,7 +149,7 @@ class SingleDocumentFile extends UniFile {
 
     @Override
     public boolean renameTo(String displayName) {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     @NonNull
