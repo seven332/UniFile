@@ -5,6 +5,7 @@ UniFile 是基于 `android.support.v4.provider.DocumentFile`，而且更好用�
 区别有：
 * 添加 listFiles(FilenameFilter)
 * 添加 openOutputStream()，openOutputStream(boolean)，openInputStream()
+* 添加 createRandomAccessFile(String)
 * 添加 subFile(String)
 * 添加其他文件 uri 支持
 * 删除了 createFile 中 mimeType 参数
@@ -15,6 +16,7 @@ The UniFile is forked from `android.support.v4.provider.DocumentFile`, but more 
 The differences:
 * Add listFiles(FilenameFilter)
 * Add openOutputStream()，openOutputStream(boolean)，openInputStream()
+* Add createRandomAccessFile(String)
 * Add subFile(String)
 * Add other file uri support
 * Remove mimeType in createFile function
