@@ -69,12 +69,24 @@ class MediaFile extends UniFile {
 
     @Override
     public boolean isDirectory() {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     @Override
     public boolean isFile() {
-        throw new UnsupportedOperationException();
+        InputStream is;
+        try {
+            is = openInputStream();
+        } catch (IOException e) {
+            return false;
+        }
+
+        try {
+            is.close();
+        } catch (IOException e) {
+            // Ignore
+        }
+        return true;
     }
 
     @Override
@@ -89,22 +101,48 @@ class MediaFile extends UniFile {
 
     @Override
     public boolean canRead() {
-        throw new UnsupportedOperationException();
+        return isFile();
     }
 
     @Override
     public boolean canWrite() {
-        throw new UnsupportedOperationException();
+        OutputStream os;
+        try {
+            os = openOutputStream(true);
+        } catch (IOException e) {
+            return false;
+        }
+        try {
+            os.close();
+        } catch (IOException e) {
+            // Ignore
+        }
+        return true;
     }
 
     @Override
     public boolean ensureDir() {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     @Override
     public boolean ensureFile() {
-        throw new UnsupportedOperationException();
+        if (isFile()) {
+            return true;
+        } else {
+            OutputStream os;
+            try {
+                os = openOutputStream();
+            } catch (IOException e) {
+                return false;
+            }
+            try {
+                os.close();
+            } catch (IOException e) {
+                // Ignore
+            }
+            return true;
+        }
     }
 
     @Override
@@ -114,12 +152,12 @@ class MediaFile extends UniFile {
 
     @Override
     public boolean delete() {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     @Override
     public boolean exists() {
-        throw new UnsupportedOperationException();
+        return isFile();
     }
 
     @Override
@@ -139,7 +177,7 @@ class MediaFile extends UniFile {
 
     @Override
     public boolean renameTo(String displayName) {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     @NonNull
