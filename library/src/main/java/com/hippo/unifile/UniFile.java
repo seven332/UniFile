@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.util.List;
 
 /**
@@ -408,11 +409,12 @@ public abstract class UniFile {
     public abstract InputStream openInputStream() throws IOException;
 
     /**
-     * Get a random read stuff of the UniFile
+     * Get a random access stuff of the UniFile
      *
-     * @return the random read stuff
+     * @param mode "r" or "rw"
+     * @return the random access stuff
      * @throws IOException
      */
     @NonNull
-    public abstract UniRandomReadFile createRandomReadFile() throws IOException;
+    public abstract RandomAccessFile createRandomAccessFile(String mode) throws IOException;
 }

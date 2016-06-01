@@ -23,6 +23,7 @@ import android.support.annotation.NonNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 
 class MediaFile extends UniFile {
 
@@ -173,7 +174,7 @@ class MediaFile extends UniFile {
 
     @NonNull
     @Override
-    public UniRandomReadFile createRandomReadFile() throws IOException {
+    public RandomAccessFile createRandomAccessFile(String mode) throws IOException {
         throw new IOException("Can't create random read file");
     }
 }

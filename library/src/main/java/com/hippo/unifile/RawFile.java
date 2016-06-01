@@ -23,10 +23,12 @@ import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
 class RawFile extends UniFile {
@@ -221,8 +223,8 @@ class RawFile extends UniFile {
 
     @Override
     @NonNull
-    public UniRandomReadFile createRandomReadFile() throws IOException {
-        return new RawRandomReadFile(mFile);
+    public RandomAccessFile createRandomAccessFile(String mode) throws FileNotFoundException {
+        return new RandomAccessFile(mFile, mode);
     }
 
     private static String getTypeForName(String name) {
