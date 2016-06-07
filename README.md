@@ -36,13 +36,13 @@ Add jitpack repository in top `build.gradle`, DO **NOT** ADD IT TO buildscript.
         }
     }
 
-在项目 `build.gradle` 里添加 RefreshLayout 依赖。
+在项目 `build.gradle` 里添加 UniFile 依赖。
 
 Add UniFile as dependency in project `build.gradle`.
 
     dependencies {
         ...
-        compile 'com.github.seven332:unifile:0.1.2'
+        compile 'com.github.seven332:unifile:0.1.4'
     }
 
 
