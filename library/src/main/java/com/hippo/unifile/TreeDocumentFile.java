@@ -20,6 +20,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import java.io.IOException;
@@ -55,6 +56,7 @@ class TreeDocumentFile extends UniFile {
             if (child.isFile()) {
                 return child;
             } else {
+                Log.w(TAG, "Try to create file " + displayName + ", but it is not file");
                 return null;
             }
         } else {
@@ -91,8 +93,8 @@ class TreeDocumentFile extends UniFile {
         }
     }
 
-    @Override
     @NonNull
+    @Override
     public Uri getUri() {
         return mUri;
     }
@@ -243,8 +245,9 @@ class TreeDocumentFile extends UniFile {
         }
     }
 
+    @NonNull
     @Override
-    public @NonNull OutputStream openOutputStream() throws IOException {
+    public OutputStream openOutputStream() throws IOException {
         OutputStream os = mContext.getContentResolver().openOutputStream(mUri);
         if (os == null) {
             throw new IOException("Can't open OutputStream");
@@ -252,8 +255,9 @@ class TreeDocumentFile extends UniFile {
         return os;
     }
 
+    @NonNull
     @Override
-    public @NonNull OutputStream openOutputStream(boolean append) throws IOException {
+    public OutputStream openOutputStream(boolean append) throws IOException {
         OutputStream os = mContext.getContentResolver().openOutputStream(mUri, append ? "wa" : "w");
         if (os == null) {
             throw new IOException("Can't open OutputStream");
@@ -261,8 +265,9 @@ class TreeDocumentFile extends UniFile {
         return os;
     }
 
+    @NonNull
     @Override
-    public @NonNull InputStream openInputStream() throws IOException {
+    public InputStream openInputStream() throws IOException {
         InputStream is = mContext.getContentResolver().openInputStream(mUri);
         if (is == null) {
             throw new IOException("Can't open InputStream");

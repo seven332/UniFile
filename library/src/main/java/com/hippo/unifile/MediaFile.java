@@ -80,12 +80,7 @@ class MediaFile extends UniFile {
         } catch (IOException e) {
             return false;
         }
-
-        try {
-            is.close();
-        } catch (IOException e) {
-            // Ignore
-        }
+        IOUtils.closeQuietly(is);
         return true;
     }
 
@@ -112,11 +107,7 @@ class MediaFile extends UniFile {
         } catch (IOException e) {
             return false;
         }
-        try {
-            os.close();
-        } catch (IOException e) {
-            // Ignore
-        }
+        IOUtils.closeQuietly(os);
         return true;
     }
 
@@ -136,11 +127,7 @@ class MediaFile extends UniFile {
             } catch (IOException e) {
                 return false;
             }
-            try {
-                os.close();
-            } catch (IOException e) {
-                // Ignore
-            }
+            IOUtils.closeQuietly(os);
             return true;
         }
     }

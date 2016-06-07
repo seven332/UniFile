@@ -21,9 +21,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
-class Contracts {
-
-    private static final String TAG = Contracts.class.getSimpleName();
+final class Contracts {
+    private Contracts() {}
 
     public static String queryForString(Context context, Uri self, String column,
             String defaultValue) {
@@ -38,7 +37,6 @@ class Contracts {
                 return defaultValue;
             }
         } catch (Exception e) {
-            // Log.w(TAG, "Failed query: " + e);
             return defaultValue;
         } finally {
             closeQuietly(c);
@@ -63,7 +61,6 @@ class Contracts {
                 return defaultValue;
             }
         } catch (Exception e) {
-            // Log.w(TAG, "Failed query: " + e);
             return defaultValue;
         } finally {
             closeQuietly(c);

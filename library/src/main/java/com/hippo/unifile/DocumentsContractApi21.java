@@ -29,7 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-class DocumentsContractApi21 {
+final class DocumentsContractApi21 {
+    private DocumentsContractApi21() {}
+
     private static final String TAG = DocumentsContractApi21.class.getSimpleName();
 
     private static final String PATH_DOCUMENT = "document";

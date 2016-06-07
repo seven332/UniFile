@@ -29,7 +29,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
-class DocumentsContractApi19 {
+final class DocumentsContractApi19 {
+    private DocumentsContractApi19() {}
 
     private static final String TAG = DocumentsContractApi19.class.getSimpleName();
 

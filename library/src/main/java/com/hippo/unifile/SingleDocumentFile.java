@@ -108,11 +108,7 @@ class SingleDocumentFile extends UniFile {
             } catch (IOException e) {
                 return false;
             }
-            try {
-                os.close();
-            } catch (IOException e) {
-                // Ignore
-            }
+            IOUtils.closeQuietly(os);
             return true;
         }
     }

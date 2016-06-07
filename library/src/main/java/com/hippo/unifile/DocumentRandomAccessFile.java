@@ -109,7 +109,12 @@ final class DocumentRandomAccessFile extends RandomAccessFile {
         }
 
         // Create RandomAccessFile
-        RandomAccessFile randomAccessFile = new DocumentRandomAccessFile(temp, mode, pfd);
+        RandomAccessFile randomAccessFile;
+        try {
+            randomAccessFile = new DocumentRandomAccessFile(temp, mode, pfd);
+        } catch (FileNotFoundException e) {
+            throw new IOException("Can't create DocumentRandomAccessFile");
+        }
 
         // Close old FileDescriptor
         try {
