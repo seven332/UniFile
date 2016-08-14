@@ -65,7 +65,7 @@ class RawFile extends UniFile {
     @Override
     public UniFile createDirectory(String displayName) {
         final File target = new File(mFile, displayName);
-        if (target.isDirectory() || target.mkdir()) {
+        if (target.isDirectory() || target.mkdirs()) {
             return new RawFile(this, target);
         } else {
             return null;
