@@ -162,29 +162,34 @@ class RawFile extends UniFile {
 
     @Override
     public UniFile[] listFiles() {
-        final ArrayList<UniFile> results = new ArrayList<>();
         final File[] files = mFile.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                results.add(new RawFile(this, file));
-            }
+        if (files == null) {
+            return null;
         }
-        return results.toArray(new UniFile[results.size()]);
+
+        int length = files.length;
+        UniFile[] results = new UniFile[length];
+        for (int i = 0; i < length; i++) {
+            results[i] = new RawFile(this, files[i]);
+        }
+        return results;
     }
 
     @Override
     public UniFile[] listFiles(FilenameFilter filter) {
-        if (null == filter) {
+        if (filter == null) {
             return listFiles();
         }
 
-        final ArrayList<UniFile> results = new ArrayList<>();
         final File[] files = mFile.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (filter.accept(this, file.getName())) {
-                    results.add(new RawFile(this, file));
-                }
+        if (files == null) {
+            return null;
+        }
+
+        final ArrayList<UniFile> results = new ArrayList<>();
+        for (File file : files) {
+            if (filter.accept(this, file.getName())) {
+                results.add(new RawFile(this, file));
             }
         }
         return results.toArray(new UniFile[results.size()]);
