@@ -41,7 +41,7 @@ class TreeDocumentFile extends UniFile {
         mUri = uri;
     }
 
-    TreeDocumentFile(UniFile parent, Context context, Uri uri, String filename) {
+    private TreeDocumentFile(UniFile parent, Context context, Uri uri, String filename) {
         super(parent);
         mContext = context.getApplicationContext();
         mUri = uri;
@@ -211,7 +211,7 @@ class TreeDocumentFile extends UniFile {
 
     @Override
     public UniFile[] listFiles(FilenameFilter filter) {
-        if (null == filter) {
+        if (filter == null) {
             return listFiles();
         }
 
