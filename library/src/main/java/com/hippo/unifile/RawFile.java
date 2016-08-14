@@ -129,14 +129,18 @@ class RawFile extends UniFile {
 
     @Override
     public boolean ensureFile() {
-        if (!mFile.isFile()) {
+        if (mFile.exists()) {
+            return mFile.isFile();
+        } else {
+            OutputStream os = null;
             try {
-                return mFile.createNewFile();
+                os = new FileOutputStream(mFile);
+                return true;
             } catch (IOException e) {
                 return false;
+            } finally {
+                IOUtils.closeQuietly(os);
             }
-        } else {
-            return true;
         }
     }
 
