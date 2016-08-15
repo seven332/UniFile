@@ -170,21 +170,13 @@ class MediaFile extends UniFile {
     @NonNull
     @Override
     public OutputStream openOutputStream() throws IOException {
-        OutputStream os = mContext.getContentResolver().openOutputStream(mUri);
-        if (os == null) {
-            throw new IOException("Can't open OutputStream");
-        }
-        return os;
+        return UriOutputStream.create(mContext, mUri, "w");
     }
 
     @NonNull
     @Override
     public OutputStream openOutputStream(boolean append) throws IOException {
-        OutputStream os = mContext.getContentResolver().openOutputStream(mUri, append ? "wa" : "w");
-        if (os == null) {
-            throw new IOException("Can't open OutputStream");
-        }
-        return os;
+        return UriOutputStream.create(mContext, mUri, append ? "wa" : "w");
     }
 
     @NonNull
