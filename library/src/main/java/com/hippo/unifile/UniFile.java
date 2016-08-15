@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,10 +37,31 @@ import java.util.List;
  */
 public abstract class UniFile {
 
+    private static List<UriHandler> sUriHandlerArray;
+
     private final UniFile mParent;
 
     UniFile(UniFile parent) {
         mParent = parent;
+    }
+
+    /**
+     * Add a UriHandler to get UniFile from uri
+     */
+    public static void addUriHandler(@NonNull UriHandler handler) {
+        if (sUriHandlerArray == null) {
+            sUriHandlerArray = new ArrayList<>();
+        }
+        sUriHandlerArray.add(handler);
+    }
+
+    /**
+     * Remove the UriHandler added before
+     */
+    public static void removeUriHandler(UriHandler handler) {
+        if (sUriHandlerArray != null) {
+            sUriHandlerArray.remove(handler);
+        }
     }
 
     /**
@@ -105,12 +127,23 @@ public abstract class UniFile {
     }
 
     /**
-     * Create a {@link UniFile} representing the filesystem tree or
-     * the document tree rooted at the given {@link Uri}.
-     *
-     * @param uri the uri of file or tree
+     * Create a {@link UniFile} representing the given {@link Uri}.
      */
     public static UniFile fromUri(Context context, Uri uri) {
+        if (context == null || uri == null) {
+            return null;
+        }
+
+        // Custom handler
+        if (sUriHandlerArray != null) {
+            for (int i = 0, size = sUriHandlerArray.size(); i < size; i++) {
+                UniFile file = sUriHandlerArray.get(i).fromUri(context, uri);
+                if (file != null) {
+                    return file;
+                }
+            }
+        }
+
         if (isFileUri(uri)) {
             return fromFile(new File(uri.getPath()));
         } else if (isDocumentUri(context, uri)) {
