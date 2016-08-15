@@ -19,6 +19,8 @@ package com.hippo.unifile;
 import android.content.Context;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
+import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -29,12 +31,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-final class DocumentRandomAccessFile extends RandomAccessFile {
+final class UriRandomAccessFile extends RandomAccessFile {
+
+    private static final String TAG = UriRandomAccessFile.class.getSimpleName();
 
     private static final Field FIELD_FD;
     private static final Method METHOD_CLOSE;
-
-    private ParcelFileDescriptor mPfd;
 
     static {
         Field field;
@@ -42,7 +44,7 @@ final class DocumentRandomAccessFile extends RandomAccessFile {
             field = RandomAccessFile.class.getDeclaredField("fd");
             field.setAccessible(true);
         } catch (NoSuchFieldException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Can't get field RandomAccessFile.fd : " + e);
             field = null;
         }
         FIELD_FD = field;
@@ -52,16 +54,18 @@ final class DocumentRandomAccessFile extends RandomAccessFile {
             Class<?> clazz = Class.forName("libcore.io.IoUtils");
             method = clazz.getMethod("close", FileDescriptor.class);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Can't get class libcore.io.IoUtils: " + e);
             method = null;
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Can't get method libcore.io.IoUtils.close(FileDescriptor): " + e);
             method = null;
         }
         METHOD_CLOSE = method;
     }
 
-    private DocumentRandomAccessFile(File file, String mode, ParcelFileDescriptor pfd) throws FileNotFoundException {
+    private ParcelFileDescriptor mPfd;
+
+    private UriRandomAccessFile(File file, String mode, ParcelFileDescriptor pfd) throws FileNotFoundException {
         super(file, mode);
         mPfd = pfd;
     }
@@ -75,8 +79,9 @@ final class DocumentRandomAccessFile extends RandomAccessFile {
         super.close();
     }
 
-    public static RandomAccessFile create(Context context, Uri uri, String mode) throws IOException {
-        // Check field
+    @NonNull
+    static RandomAccessFile create(Context context, Uri uri, String mode) throws IOException {
+        // Check reflection stuff
         if (FIELD_FD == null || METHOD_CLOSE == null) {
             throw new IOException("Can't get reflection stuff");
         }
@@ -111,9 +116,9 @@ final class DocumentRandomAccessFile extends RandomAccessFile {
         // Create RandomAccessFile
         RandomAccessFile randomAccessFile;
         try {
-            randomAccessFile = new DocumentRandomAccessFile(temp, mode, pfd);
+            randomAccessFile = new UriRandomAccessFile(temp, mode, pfd);
         } catch (FileNotFoundException e) {
-            throw new IOException("Can't create DocumentRandomAccessFile");
+            throw new IOException("Can't create UriRandomAccessFile");
         }
 
         // Close old FileDescriptor
@@ -123,11 +128,11 @@ final class DocumentRandomAccessFile extends RandomAccessFile {
                 METHOD_CLOSE.invoke(null, (FileDescriptor) obj);
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Failed to invoke libcore.io.IoUtils.close(FileDescriptor): " + e);
             randomAccessFile.close();
             throw new IOException(e.getMessage());
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Failed to invoke libcore.io.IoUtils.close(FileDescriptor): " + e);
             randomAccessFile.close();
             throw new IOException(e.getMessage());
         }
