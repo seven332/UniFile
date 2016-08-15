@@ -32,6 +32,9 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
 class RawFile extends UniFile {
+
+    private static final String TAG = RawFile.class.getSimpleName();
+
     private File mFile;
 
     RawFile(UniFile parent, File file) {

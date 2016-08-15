@@ -35,7 +35,6 @@ import java.util.List;
  * The UniFile is designed to emulate File interface for both File and Uri.
  */
 public abstract class UniFile {
-    static final String TAG = "UniFile";
 
     private final UniFile mParent;
 
