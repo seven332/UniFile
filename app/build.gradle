@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
 
     defaultConfig {
         applicationId "com.hippo.unifile.example"
         minSdkVersion 4
-        targetSdkVersion 23
-        versionCode 5
-        versionName '0.1.4'
+        targetSdkVersion 24
+        versionCode 6
+        versionName '0.2.0'
     }
 
     buildTypes {
