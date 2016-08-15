@@ -232,8 +232,8 @@ class RawFile extends UniFile {
 
     @Override
     @NonNull
-    public RandomAccessFile createRandomAccessFile(String mode) throws FileNotFoundException {
-        return new RandomAccessFile(mFile, mode);
+    public UniRandomAccessFile createRandomAccessFile(String mode) throws FileNotFoundException {
+        return new RawRandomAccessFile(new RandomAccessFile(mFile, mode));
     }
 
     private static String getTypeForName(String name) {

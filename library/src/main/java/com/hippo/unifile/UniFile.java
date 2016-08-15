@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
 import java.util.List;
 
 /**
@@ -416,5 +415,5 @@ public abstract class UniFile {
      * @throws IOException
      */
     @NonNull
-    public abstract RandomAccessFile createRandomAccessFile(String mode) throws IOException;
+    public abstract UniRandomAccessFile createRandomAccessFile(String mode) throws IOException;
 }

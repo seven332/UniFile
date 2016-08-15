@@ -23,7 +23,6 @@ import android.support.annotation.NonNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
 
 class SingleDocumentFile extends UniFile {
 
@@ -180,11 +179,11 @@ class SingleDocumentFile extends UniFile {
 
     @NonNull
     @Override
-    public RandomAccessFile createRandomAccessFile(String mode) throws IOException {
+    public UniRandomAccessFile createRandomAccessFile(String mode) throws IOException {
         // Check file
         if (!ensureFile()) {
             throw new IOException("Can't make sure it is file");
         }
-        return UriRandomAccessFile.create(mContext, mUri, mode);
+        return new RawRandomAccessFile(UriRandomAccessFile.create(mContext, mUri, mode));
     }
 }
