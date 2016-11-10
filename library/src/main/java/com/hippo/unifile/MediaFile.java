@@ -52,10 +52,6 @@ class MediaFile extends UniFile {
         return mUri;
     }
 
-    static boolean isMediaUri(Context context, Uri uri) {
-        return null != MediaContract.getName(context, uri);
-    }
-
     @Override
     public String getName() {
         return MediaContract.getName(mContext, mUri);

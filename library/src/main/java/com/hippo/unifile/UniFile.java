@@ -152,7 +152,7 @@ public abstract class UniFile {
             } else {
                 return fromSingleUri(context, uri);
             }
-        } else if (MediaFile.isMediaUri(context, uri)) {
+        } else if (MediaContract.isMediaUri(context, uri)) {
             return new MediaFile(context, uri);
         } else {
             return null;
