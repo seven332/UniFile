@@ -19,6 +19,7 @@ package com.hippo.unifile;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,6 +61,12 @@ class MediaFile extends UniFile {
     @Override
     public String getType() {
         return MediaContract.getType(mContext, mUri);
+    }
+
+    @Nullable
+    @Override
+    public String getFilePath() {
+        return MediaContract.getFilePath(mContext, mUri);
     }
 
     @Override

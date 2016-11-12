@@ -18,13 +18,16 @@ package com.hippo.unifile;
 
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -33,6 +36,11 @@ final class DocumentsContractApi19 {
     private DocumentsContractApi19() {}
 
     private static final String TAG = DocumentsContractApi19.class.getSimpleName();
+
+    private static final String DOCUMENT_EXTERNAL_STORAGE_AUTHORITY = "com.android.externalstorage.documents";
+    private static final String DOCUMENT_DOWNLOAD_AUTHORITY = "com.android.providers.downloads.documents";
+    private static final String DOCUMENT_MEDIA_AUTHORITY = "com.android.providers.media.documents";
+
 
     public static boolean isDocumentUri(Context context, Uri self) {
         return DocumentsContract.isDocumentUri(context, self);
@@ -52,6 +60,64 @@ final class DocumentsContractApi19 {
             return null;
         } else {
             return rawType;
+        }
+    }
+
+    public static String getFilePath(Context context, Uri self) {
+        if (self == null) {
+            return null;
+        }
+
+        try {
+            final String authority = self.getAuthority();
+            if (DOCUMENT_EXTERNAL_STORAGE_AUTHORITY.equals(authority)) {
+                // Get type and path
+                final String docId = DocumentsContract.getDocumentId(self);
+                final String[] split = docId.split(":");
+                final String type = split[0];
+                final String path = split[1];
+
+                if ("primary".equalsIgnoreCase(type)) {
+                    return Environment.getExternalStorageDirectory() + "/" + path;
+                } else {
+                    // TODO how to get file path in non-primary volumes?
+                    return null;
+                }
+            } else if (DOCUMENT_DOWNLOAD_AUTHORITY.equals(authority)) {
+                final String id = DocumentsContract.getDocumentId(self);
+
+                final Uri contentUri = ContentUris.withAppendedId(
+                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+
+                return Contracts.queryForString(context, contentUri, MediaStore.MediaColumns.DATA, null);
+            } else if (DOCUMENT_MEDIA_AUTHORITY.equals(authority)) {
+                // Get type and id
+                final String docId = DocumentsContract.getDocumentId(self);
+                final String[] split = docId.split(":");
+                final String type = split[0];
+                final String id = split[1];
+
+                final Uri baseUri;
+                if ("image".equals(type)) {
+                    baseUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                } else if ("video".equals(type)) {
+                    baseUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                } else if ("audio".equals(type)) {
+                    baseUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                } else {
+                    Log.d(TAG, "Unknown type in " + DOCUMENT_MEDIA_AUTHORITY + ": " + type);
+                    return null;
+                }
+
+                final Uri contentUri = ContentUris.withAppendedId(baseUri, Long.valueOf(id));
+
+                // Requires android.permission.READ_EXTERNAL_STORAGE or return null
+                return Contracts.queryForString(context, contentUri, MediaStore.MediaColumns.DATA, null);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
         }
     }
 

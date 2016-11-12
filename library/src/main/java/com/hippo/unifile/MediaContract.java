@@ -31,6 +31,10 @@ final class MediaContract {
         return Contracts.queryForString(context, self, MediaStore.MediaColumns.MIME_TYPE, null);
     }
 
+    public static String getFilePath(Context context, Uri self) {
+        return Contracts.queryForString(context, self, MediaStore.MediaColumns.DATA, null);
+    }
+
     public static long lastModified(Context context, Uri self) {
         return Contracts.queryForLong(context, self, MediaStore.MediaColumns.DATE_MODIFIED, 0);
     }

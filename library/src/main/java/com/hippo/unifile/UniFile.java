@@ -254,6 +254,15 @@ public abstract class UniFile {
     public abstract String getType();
 
     /**
+     * Return the file path of this file.
+     * Like {@code /xxx/yyy/zzz}.
+     *
+     * @return file path of the file, or null if can't or failed
+     */
+    @Nullable
+    public abstract String getFilePath();
+
+    /**
      * Return the parent file of this file. Only defined inside of the
      * user-selected tree; you can never escape above the top of the tree.
      * <p>
