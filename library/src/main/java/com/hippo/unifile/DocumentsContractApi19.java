@@ -31,6 +31,8 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.io.File;
+
 @TargetApi(Build.VERSION_CODES.KITKAT)
 final class DocumentsContractApi19 {
     private DocumentsContractApi19() {}
@@ -80,8 +82,22 @@ final class DocumentsContractApi19 {
                 if ("primary".equalsIgnoreCase(type)) {
                     return Environment.getExternalStorageDirectory() + "/" + path;
                 } else {
-                    // TODO how to get file path in non-primary volumes?
-                    return null;
+                    // Get the storage path
+                    File[] cacheDirs = context.getExternalCacheDirs();
+                    String storageDir = null;
+                    for (File cacheDir : cacheDirs) {
+                        final String cachePath = cacheDir.getPath();
+                        int index = cachePath.indexOf(type);
+                        if (index >= 0) {
+                            storageDir = cachePath.substring(0, index + type.length());
+                        }
+                    }
+
+                    if (storageDir != null) {
+                        return storageDir + "/" + path;
+                    } else {
+                        return null;
+                    }
                 }
             } else if (DOCUMENT_DOWNLOAD_AUTHORITY.equals(authority)) {
                 final String id = DocumentsContract.getDocumentId(self);
