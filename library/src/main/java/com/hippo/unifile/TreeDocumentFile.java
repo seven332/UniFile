@@ -195,24 +195,13 @@ class TreeDocumentFile extends UniFile {
         return DocumentsContractApi19.exists(mContext, mUri);
     }
 
-    private String getFilenameForUri(Uri uri) {
-        String path = uri.getPath();
-        if (path != null) {
-            int index = path.lastIndexOf('/');
-            if (index >= 0) {
-                return path.substring(index + 1);
-            }
-        }
-        return null;
-    }
-
     @Override
     public UniFile[] listFiles() {
         final Uri[] result = DocumentsContractApi21.listFiles(mContext, mUri);
         final UniFile[] resultFiles = new UniFile[result.length];
         for (int i = 0, n = result.length; i < n; i++) {
             Uri uri = result[i];
-            resultFiles[i] = new TreeDocumentFile(this, mContext, uri, getFilenameForUri(uri));
+            resultFiles[i] = new TreeDocumentFile(this, mContext, uri, uri.getLastPathSegment());
         }
         return resultFiles;
     }
@@ -227,7 +216,7 @@ class TreeDocumentFile extends UniFile {
         final ArrayList<UniFile> results = new ArrayList<>();
         for (int i = 0, n = result.length; i < n; i++) {
             Uri uri = result[i];
-            String name = getFilenameForUri(uri);
+            String name = uri.getLastPathSegment();
             if (filter.accept(this, name)) {
                 results.add(new TreeDocumentFile(this, mContext, uri, name));
             }
