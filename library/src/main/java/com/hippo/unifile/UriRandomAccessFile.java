@@ -17,12 +17,13 @@
 package com.hippo.unifile;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -64,10 +65,11 @@ final class UriRandomAccessFile extends RandomAccessFile {
     }
 
     private ParcelFileDescriptor mPfd;
+    private AssetFileDescriptor mAfd;
 
-    private UriRandomAccessFile(File file, String mode, ParcelFileDescriptor pfd) throws FileNotFoundException {
-        super(file, mode);
-        mPfd = pfd;
+    private UriRandomAccessFile(String mode) throws FileNotFoundException {
+        // /dev/random is only a temp file to create UriRandomAccessFile object
+        super("/dev/random", mode);
     }
 
     @Override
@@ -76,76 +78,116 @@ final class UriRandomAccessFile extends RandomAccessFile {
             mPfd.close();
             mPfd = null;
         }
+        if (mAfd != null) {
+            mAfd.close();
+            mAfd = null;
+        }
         super.close();
     }
 
-    @NonNull
-    static RandomAccessFile create(Context context, Uri uri, String mode) throws IOException {
+    private static void checkReflection() throws IOException {
         // Check reflection stuff
         if (FIELD_FD == null || METHOD_CLOSE == null) {
             throw new IOException("Can't get reflection stuff");
         }
+    }
 
-        // Get FileDescriptor
-        ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, mode);
-        if (pfd == null) {
-            throw new IOException("Can't get ParcelFileDescriptor");
-        }
-        FileDescriptor fd = pfd.getFileDescriptor();
-        if (fd == null) {
-            throw new IOException("Can't get FileDescriptor");
-        }
+    @NonNull
+    static RandomAccessFile create(Context context, Uri uri, String mode) throws IOException {
+        checkReflection();
 
-        // Get temp file
-        File dir = context.getCacheDir();
-        if (dir == null) {
-            throw new IOException("Can't get cache dir");
-        }
-        File temp = null;
-        for (int i = 0; i < 100; i++) {
-            temp = new File(dir, Integer.toString(i));
-            if (temp.isFile() || !temp.exists()) {
-                break;
-            }
-            temp = null;
-        }
-        if (temp == null) {
-            throw new IOException("Can't create temp file");
-        }
-
-        // Create RandomAccessFile
-        RandomAccessFile randomAccessFile;
+        ParcelFileDescriptor pfd = null;
         try {
-            randomAccessFile = new UriRandomAccessFile(temp, mode, pfd);
+            pfd = context.getContentResolver().openFileDescriptor(uri, mode);
+            if (pfd == null) {
+                throw new IOException("Can't get ParcelFileDescriptor");
+            }
+            FileDescriptor fd = pfd.getFileDescriptor();
+            if (fd == null) {
+                throw new IOException("Can't get FileDescriptor");
+            }
+
+            UriRandomAccessFile file = create(fd, mode);
+            file.mPfd = pfd;
+
+            return file;
+        } catch (IOException e) {
+            // Close ParcelFileDescriptor if failed
+            if (pfd != null) {
+                pfd.close();
+            }
+            throw e;
+        }
+    }
+
+    @NonNull
+    static RandomAccessFile create(AssetManager assetManager, String path, String mode) throws IOException {
+        // Check mode
+        if (!"r".equals(mode)) {
+            throw new IOException("Non-supported mode for asset file: " + mode);
+        }
+
+        checkReflection();
+
+        AssetFileDescriptor afd = null;
+        try {
+            afd = assetManager.openFd(path);
+            if (afd == null) {
+                throw new IOException("Can't get AssetFileDescriptor");
+            }
+            FileDescriptor fd = afd.getFileDescriptor();
+            if (fd == null) {
+                throw new IOException("Can't get FileDescriptor");
+            }
+
+            UriRandomAccessFile file = create(fd, mode);
+            file.mAfd = afd;
+
+            return file;
+        } catch (IOException e) {
+            // Close AssetFileDescriptor if failed
+            if (afd != null) {
+                afd.close();
+            }
+            throw e;
+        }
+    }
+
+    @NonNull
+    private static UriRandomAccessFile create(FileDescriptor fd, String mode) throws IOException {
+        // Create UriRandomAccessFile object
+        UriRandomAccessFile file;
+        try {
+            file = new UriRandomAccessFile(mode);
         } catch (FileNotFoundException e) {
             throw new IOException("Can't create UriRandomAccessFile");
         }
 
         // Close old FileDescriptor
         try {
-            Object obj = FIELD_FD.get(randomAccessFile);
+            Object obj = FIELD_FD.get(file);
             if (obj instanceof FileDescriptor) {
                 METHOD_CLOSE.invoke(null, (FileDescriptor) obj);
             }
         } catch (IllegalAccessException e) {
             Log.e(TAG, "Failed to invoke libcore.io.IoUtils.close(FileDescriptor): " + e);
-            randomAccessFile.close();
+            file.close();
             throw new IOException(e.getMessage());
         } catch (InvocationTargetException e) {
             Log.e(TAG, "Failed to invoke libcore.io.IoUtils.close(FileDescriptor): " + e);
-            randomAccessFile.close();
+            file.close();
             throw new IOException(e.getMessage());
         }
 
         // Set new FileDescriptor
         try {
-            FIELD_FD.set(randomAccessFile, fd);
+            FIELD_FD.set(file, fd);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-            randomAccessFile.close();
+            file.close();
             throw new IOException(e.getMessage());
         }
 
-        return randomAccessFile;
+        return file;
     }
 }

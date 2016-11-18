@@ -1,0 +1,258 @@
+/*
+ * Copyright 2016 Hippo Seven
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.hippo.unifile;
+
+/*
+ * Created by Hippo on 11/16/2016.
+ */
+
+import android.content.Context;
+import android.content.res.AssetManager;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.webkit.MimeTypeMap;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+
+class AssetFile extends UniFile {
+
+    private final Context mContext;
+    private final AssetManager mAssetManager;
+    private final String mPath;
+
+    AssetFile(UniFile parent, Context context, String path) {
+        super(parent);
+        mContext = context;
+        mAssetManager = context.getAssets();
+        mPath = path;
+    }
+
+    @Override
+    public UniFile createFile(String displayName) {
+        // Not supported
+        return null;
+    }
+
+    @Override
+    public UniFile createDirectory(String displayName) {
+        // Not supported
+        return null;
+    }
+
+    @NonNull
+    @Override
+    public Uri getUri() {
+        return new Uri.Builder().scheme("file").path("/android_asset/" + mPath).build();
+    }
+
+    @Nullable
+    @Override
+    public String getName() {
+        final int index = mPath.lastIndexOf('/');
+        if (index >= 0 && index < mPath.length() - 1) {
+            return mPath.substring(index + 1);
+        } else {
+            return mPath;
+        }
+    }
+
+    @Nullable
+    @Override
+    public String getType() {
+        final String name = getName();
+        if (name != null) {
+            return getTypeForName(name);
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    @Override
+    public String getFilePath() {
+        // Not supported
+        return null;
+    }
+
+    @Override
+    public boolean isDirectory() {
+        try {
+            String[] files = mAssetManager.list(mPath);
+            return files != null && files.length > 0;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean isFile() {
+        InputStream is;
+        try {
+            is = openInputStream();
+        } catch (IOException e) {
+            return false;
+        }
+        IOUtils.closeQuietly(is);
+        return true;
+    }
+
+    @Override
+    public long lastModified() {
+        // Not supported
+        return -1;
+    }
+
+    @Override
+    public long length() {
+        // Not supported
+        return -1;
+    }
+
+    @Override
+    public boolean canRead() {
+        return isFile();
+    }
+
+    @Override
+    public boolean canWrite() {
+        return false;
+    }
+
+    @Override
+    public boolean ensureDir() {
+        return isDirectory();
+    }
+
+    @Override
+    public boolean ensureFile() {
+        return isFile();
+    }
+
+    @Nullable
+    @Override
+    public UniFile subFile(String displayName) {
+        // Not supported
+        return null;
+    }
+
+    @Override
+    public boolean delete() {
+        // Not supported
+        return false;
+    }
+
+    @Override
+    public boolean exists() {
+        return isDirectory() || isFile();
+    }
+
+    @Nullable
+    @Override
+    public UniFile[] listFiles() {
+        try {
+            String[] files = mAssetManager.list(mPath);
+            if (files == null || files.length == 0) {
+                return null;
+            }
+
+            int length = files.length;
+            UniFile[] results = new UniFile[length];
+            for (int i = 0; i < length; i++) {
+                results[i] = new AssetFile(this, mContext, mPath + "/" + files[i]);
+            }
+            return results;
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    @Nullable
+    @Override
+    public UniFile[] listFiles(FilenameFilter filter) {
+        try {
+            String[] files = mAssetManager.list(mPath);
+            if (files == null || files.length == 0) {
+                return null;
+            }
+
+            int length = files.length;
+            final ArrayList<UniFile> results = new ArrayList<>();
+            for (int i = 0; i < length; i++) {
+                String name = files[i];
+                if (filter.accept(this, name)) {
+                    results.add(new AssetFile(this, mContext, mPath + "/" + files[i]));
+                }
+            }
+            return results.toArray(new UniFile[results.size()]);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    @Nullable
+    @Override
+    public UniFile findFile(String displayName) {
+        return null;
+    }
+
+    @Override
+    public boolean renameTo(String displayName) {
+        // Not supported
+        return false;
+    }
+
+    @NonNull
+    @Override
+    public OutputStream openOutputStream() throws IOException {
+        throw new IOException("Not support OutputStream for asset file.");
+    }
+
+    @NonNull
+    @Override
+    public OutputStream openOutputStream(boolean append) throws IOException {
+        throw new IOException("Not support OutputStream for asset file.");
+    }
+
+    @NonNull
+    @Override
+    public InputStream openInputStream() throws IOException {
+        return mAssetManager.open(mPath);
+    }
+
+    @NonNull
+    @Override
+    public UniRandomAccessFile createRandomAccessFile(String mode) throws IOException {
+        return new RawRandomAccessFile(UriRandomAccessFile.create(mAssetManager, mPath, mode));
+    }
+
+    private static String getTypeForName(String name) {
+        final int lastDot = name.lastIndexOf('.');
+        if (lastDot >= 0) {
+            final String extension = name.substring(lastDot + 1).toLowerCase();
+            final String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            if (mime != null) {
+                return mime;
+            }
+        }
+
+        return "application/octet-stream";
+    }
+}

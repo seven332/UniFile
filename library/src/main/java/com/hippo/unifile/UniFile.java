@@ -75,6 +75,16 @@ public abstract class UniFile {
         return file != null ? new RawFile(null, file) : null;
     }
 
+    private static final int ASSET_PATH_PREFIX_LENGTH = "/android_asset/".length();
+
+    /**
+     *
+     */
+    @Nullable
+    public static UniFile fromAssetUri(Context context, Uri assetUri) {
+        return new AssetFile(null, context, assetUri.getPath().substring(ASSET_PATH_PREFIX_LENGTH));
+    }
+
     /**
      * Create a {@link UniFile} representing the single document at the
      * given {@link Uri}. This is only useful on devices running
@@ -145,7 +155,11 @@ public abstract class UniFile {
         }
 
         if (isFileUri(uri)) {
-            return fromFile(new File(uri.getPath()));
+            if (isAssetUri(uri)) {
+                return fromAssetUri(context, uri);
+            } else {
+                return fromFile(new File(uri.getPath()));
+            }
         } else if (isDocumentUri(context, uri)) {
             if (isTreeUri(uri)) {
                 return fromTreeUri(context, uri);
@@ -189,6 +203,19 @@ public abstract class UniFile {
         final List<String> paths = uri.getPathSegments();
         return (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())
                 && paths.size() >= 2 && "tree".equals(paths.get(0)));
+    }
+
+    /**
+     * Test if given Uri is AssetUri.
+     * Like {@code file:///android_asset/pathsegment1/pathsegment2}
+     */
+    public static boolean isAssetUri(Uri uri) {
+        if (uri == null) {
+            return false;
+        }
+        final List<String> paths = uri.getPathSegments();
+        return ContentResolver.SCHEME_FILE.equals(uri.getScheme())
+                && paths.size() >= 2 && "android_asset".equals(paths.get(0));
     }
 
     /**
