@@ -25,7 +25,6 @@ import android.content.res.AssetManager;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.webkit.MimeTypeMap;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -77,11 +76,10 @@ class AssetFile extends UniFile {
     @Nullable
     @Override
     public String getType() {
-        final String name = getName();
-        if (name != null) {
-            return getTypeForName(name);
-        } else {
+        if (isDirectory()) {
             return null;
+        } else {
+            return Utils.getTypeForName(getName());
         }
     }
 
@@ -241,18 +239,5 @@ class AssetFile extends UniFile {
     @Override
     public UniRandomAccessFile createRandomAccessFile(String mode) throws IOException {
         return new RawRandomAccessFile(TrickRandomAccessFile.create(mAssetManager, mPath, mode));
-    }
-
-    private static String getTypeForName(String name) {
-        final int lastDot = name.lastIndexOf('.');
-        if (lastDot >= 0) {
-            final String extension = name.substring(lastDot + 1).toLowerCase();
-            final String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-            if (mime != null) {
-                return mime;
-            }
-        }
-
-        return "application/octet-stream";
     }
 }

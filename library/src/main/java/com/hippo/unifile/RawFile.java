@@ -20,7 +20,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -92,7 +91,7 @@ class RawFile extends UniFile {
         if (mFile.isDirectory()) {
             return null;
         } else {
-            return getTypeForName(mFile.getName());
+            return Utils.getTypeForName(mFile.getName());
         }
     }
 
@@ -244,19 +243,6 @@ class RawFile extends UniFile {
     @NonNull
     public UniRandomAccessFile createRandomAccessFile(String mode) throws FileNotFoundException {
         return new RawRandomAccessFile(new RandomAccessFile(mFile, mode));
-    }
-
-    private static String getTypeForName(String name) {
-        final int lastDot = name.lastIndexOf('.');
-        if (lastDot >= 0) {
-            final String extension = name.substring(lastDot + 1).toLowerCase();
-            final String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-            if (mime != null) {
-                return mime;
-            }
-        }
-
-        return "application/octet-stream";
     }
 
     private static boolean deleteContents(File dir) {
