@@ -32,9 +32,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-final class UriRandomAccessFile extends RandomAccessFile {
+final class TrickRandomAccessFile extends RandomAccessFile {
 
-    private static final String TAG = UriRandomAccessFile.class.getSimpleName();
+    private static final String TAG = TrickRandomAccessFile.class.getSimpleName();
 
     private static final Field FIELD_FD;
     private static final Method METHOD_CLOSE;
@@ -67,8 +67,8 @@ final class UriRandomAccessFile extends RandomAccessFile {
     private ParcelFileDescriptor mPfd;
     private AssetFileDescriptor mAfd;
 
-    private UriRandomAccessFile(String mode) throws FileNotFoundException {
-        // /dev/random is only a temp file to create UriRandomAccessFile object
+    private TrickRandomAccessFile(String mode) throws FileNotFoundException {
+        // /dev/random is only a temp file to create TrickRandomAccessFile object
         super("/dev/random", mode);
     }
 
@@ -107,7 +107,7 @@ final class UriRandomAccessFile extends RandomAccessFile {
                 throw new IOException("Can't get FileDescriptor");
             }
 
-            UriRandomAccessFile file = create(fd, mode);
+            TrickRandomAccessFile file = create(fd, mode);
             file.mPfd = pfd;
 
             return file;
@@ -140,7 +140,7 @@ final class UriRandomAccessFile extends RandomAccessFile {
                 throw new IOException("Can't get FileDescriptor");
             }
 
-            UriRandomAccessFile file = create(fd, mode);
+            TrickRandomAccessFile file = create(fd, mode);
             file.mAfd = afd;
 
             return file;
@@ -154,13 +154,13 @@ final class UriRandomAccessFile extends RandomAccessFile {
     }
 
     @NonNull
-    private static UriRandomAccessFile create(FileDescriptor fd, String mode) throws IOException {
-        // Create UriRandomAccessFile object
-        UriRandomAccessFile file;
+    private static TrickRandomAccessFile create(FileDescriptor fd, String mode) throws IOException {
+        // Create TrickRandomAccessFile object
+        TrickRandomAccessFile file;
         try {
-            file = new UriRandomAccessFile(mode);
+            file = new TrickRandomAccessFile(mode);
         } catch (FileNotFoundException e) {
-            throw new IOException("Can't create UriRandomAccessFile");
+            throw new IOException("Can't create TrickRandomAccessFile");
         }
 
         // Close old FileDescriptor

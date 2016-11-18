@@ -240,7 +240,7 @@ class AssetFile extends UniFile {
     @NonNull
     @Override
     public UniRandomAccessFile createRandomAccessFile(String mode) throws IOException {
-        return new RawRandomAccessFile(UriRandomAccessFile.create(mAssetManager, mPath, mode));
+        return new RawRandomAccessFile(TrickRandomAccessFile.create(mAssetManager, mPath, mode));
     }
 
     private static String getTypeForName(String name) {

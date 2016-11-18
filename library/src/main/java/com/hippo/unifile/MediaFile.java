@@ -172,13 +172,13 @@ class MediaFile extends UniFile {
     @NonNull
     @Override
     public OutputStream openOutputStream() throws IOException {
-        return UriOutputStream.create(mContext, mUri, "w");
+        return TrickOutputStream.create(mContext, mUri, "w");
     }
 
     @NonNull
     @Override
     public OutputStream openOutputStream(boolean append) throws IOException {
-        return UriOutputStream.create(mContext, mUri, append ? "wa" : "w");
+        return TrickOutputStream.create(mContext, mUri, append ? "wa" : "w");
     }
 
     @NonNull
@@ -194,6 +194,6 @@ class MediaFile extends UniFile {
     @NonNull
     @Override
     public UniRandomAccessFile createRandomAccessFile(String mode) throws IOException {
-        return new RawRandomAccessFile(UriRandomAccessFile.create(mContext, mUri, mode));
+        return new RawRandomAccessFile(TrickRandomAccessFile.create(mContext, mUri, mode));
     }
 }

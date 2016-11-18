@@ -33,13 +33,13 @@ import java.io.OutputStream;
 // The OutputStream from Context.getContentResolver().openOutputStream()
 // and FileProvider uri may throw Exception when write. The Exception looks like:
 // java.io.IOException: write failed: EBADF (Bad file descriptor)
-// But UriOutputStream can avoid it on my Nexus 5 cm13.
+// But TrickOutputStream can avoid it on my Nexus 5 cm13.
 // TODO need more test
-class UriOutputStream extends FileOutputStream {
+class TrickOutputStream extends FileOutputStream {
 
-    private ParcelFileDescriptor mPfd;
+    private final ParcelFileDescriptor mPfd;
 
-    private UriOutputStream(ParcelFileDescriptor pfd, FileDescriptor fd) {
+    private TrickOutputStream(ParcelFileDescriptor pfd, FileDescriptor fd) {
         super(fd);
         mPfd = pfd;
     }
@@ -61,6 +61,6 @@ class UriOutputStream extends FileOutputStream {
             throw new IOException("Can't get FileDescriptor");
         }
 
-        return new UriOutputStream(pfd, fd);
+        return new TrickOutputStream(pfd, fd);
     }
 }
