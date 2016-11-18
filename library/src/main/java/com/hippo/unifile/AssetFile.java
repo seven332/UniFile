@@ -20,7 +20,6 @@ package com.hippo.unifile;
  * Created by Hippo on 11/16/2016.
  */
 
-import android.content.Context;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -33,14 +32,12 @@ import java.util.ArrayList;
 
 class AssetFile extends UniFile {
 
-    private final Context mContext;
     private final AssetManager mAssetManager;
     private final String mPath;
 
-    AssetFile(UniFile parent, Context context, String path) {
+    AssetFile(UniFile parent, AssetManager assetManager, String path) {
         super(parent);
-        mContext = context;
-        mAssetManager = context.getAssets();
+        mAssetManager = assetManager;
         mPath = path;
     }
 
@@ -174,7 +171,7 @@ class AssetFile extends UniFile {
             int length = files.length;
             UniFile[] results = new UniFile[length];
             for (int i = 0; i < length; i++) {
-                results[i] = new AssetFile(this, mContext, mPath + "/" + files[i]);
+                results[i] = new AssetFile(this, mAssetManager, mPath + "/" + files[i]);
             }
             return results;
         } catch (IOException e) {
@@ -196,7 +193,7 @@ class AssetFile extends UniFile {
             for (int i = 0; i < length; i++) {
                 String name = files[i];
                 if (filter.accept(this, name)) {
-                    results.add(new AssetFile(this, mContext, mPath + "/" + files[i]));
+                    results.add(new AssetFile(this, mAssetManager, mPath + "/" + files[i]));
                 }
             }
             return results.toArray(new UniFile[results.size()]);

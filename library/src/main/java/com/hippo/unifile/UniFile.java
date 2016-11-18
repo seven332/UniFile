@@ -19,6 +19,7 @@ package com.hippo.unifile;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -78,8 +79,10 @@ public abstract class UniFile {
     private static final int ASSET_PATH_PREFIX_LENGTH = "/android_asset/".length();
 
     // Create AssetFile from asset file uri
-    private static UniFile fromAssetUri(Context context, Uri assetUri) {
-        return new AssetFile(null, context, assetUri.getPath().substring(ASSET_PATH_PREFIX_LENGTH));
+    private static UniFile fromAssetUri(AssetManager assetManager, Uri assetUri) {
+        final String originPath = assetUri.getPath().substring(ASSET_PATH_PREFIX_LENGTH);
+        final String path = Utils.normalize(originPath);
+        return new AssetFile(null, assetManager, path);
     }
 
     // Create SingleDocumentFile from single document file uri
@@ -128,7 +131,7 @@ public abstract class UniFile {
 
         if (isFileUri(uri)) {
             if (isAssetUri(uri)) {
-                return fromAssetUri(context, uri);
+                return fromAssetUri(context.getAssets(), uri);
             } else {
                 return fromFile(new File(uri.getPath()));
             }
