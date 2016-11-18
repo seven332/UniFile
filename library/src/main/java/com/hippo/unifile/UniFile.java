@@ -77,26 +77,13 @@ public abstract class UniFile {
 
     private static final int ASSET_PATH_PREFIX_LENGTH = "/android_asset/".length();
 
-    /**
-     *
-     */
-    @Nullable
-    public static UniFile fromAssetUri(Context context, Uri assetUri) {
+    // Create AssetFile from asset file uri
+    private static UniFile fromAssetUri(Context context, Uri assetUri) {
         return new AssetFile(null, context, assetUri.getPath().substring(ASSET_PATH_PREFIX_LENGTH));
     }
 
-    /**
-     * Create a {@link UniFile} representing the single document at the
-     * given {@link Uri}. This is only useful on devices running
-     * {@link android.os.Build.VERSION_CODES#KITKAT} or later, and will return
-     * {@code null} when called on earlier platform versions.
-     *
-     * @param singleUri the {@link Intent#getData()} from a successful
-     *            {@link Intent#ACTION_OPEN_DOCUMENT} or
-     *            {@link Intent#ACTION_CREATE_DOCUMENT} request.
-     * @return the {@link UniFile} representing the given {@link Uri}.
-     */
-    public static UniFile fromSingleUri(Context context, Uri singleUri) {
+    // Create SingleDocumentFile from single document file uri
+    private static UniFile fromSingleDocumentUri(Context context, Uri singleUri) {
         final int version = Build.VERSION.SDK_INT;
         if (version >= 19) {
             return new SingleDocumentFile(null, context, singleUri);
@@ -105,17 +92,8 @@ public abstract class UniFile {
         }
     }
 
-    /**
-     * Create a {@link UniFile} representing the document tree rooted at
-     * the given {@link Uri}. This is only useful on devices running
-     * {@link Build.VERSION_CODES#LOLLIPOP} or later, and will return
-     * {@code null} when called on earlier platform versions.
-     *
-     * @param treeUri the {@link Intent#getData()} from a successful
-     *            {@link Intent#ACTION_OPEN_DOCUMENT_TREE} request.
-     * @return the {@link UniFile} representing the given {@link Uri}.
-     */
-    public static UniFile fromTreeUri(Context context, Uri treeUri) {
+    // Create TreeDocumentFile from tree document file uri
+    private static UniFile fromTreeDocumentUri(Context context, Uri treeUri) {
         final int version = Build.VERSION.SDK_INT;
         if (version >= 21) {
             return new TreeDocumentFile(null, context,
@@ -125,14 +103,8 @@ public abstract class UniFile {
         }
     }
 
-    /**
-     * Create a {@link UniFile} representing the media file rooted at
-     * the given {@link Uri}.
-     *
-     * @param mediaUri the media uri to wrap
-     * @return the {@link UniFile} representing the given {@link Uri}.
-     */
-    public static UniFile fromMediaUri(Context context, Uri mediaUri) {
+    // Create MediaFile from tree media file uri
+    private static UniFile fromMediaUri(Context context, Uri mediaUri) {
         return new MediaFile(context, mediaUri);
     }
 
@@ -161,10 +133,10 @@ public abstract class UniFile {
                 return fromFile(new File(uri.getPath()));
             }
         } else if (isDocumentUri(context, uri)) {
-            if (isTreeUri(uri)) {
-                return fromTreeUri(context, uri);
+            if (isTreeDocumentUri(uri)) {
+                return fromTreeDocumentUri(context, uri);
             } else {
-                return fromSingleUri(context, uri);
+                return fromSingleDocumentUri(context, uri);
             }
         } else if (isMediaUri(context, uri)) {
             return new MediaFile(context, uri);
@@ -194,9 +166,9 @@ public abstract class UniFile {
     }
 
     /**
-     * Test if given Uri is TreeUri
+     * Test if given Uri is TreeDocumentUri
      */
-    public static boolean isTreeUri(Uri uri) {
+    public static boolean isTreeDocumentUri(Uri uri) {
         if (uri == null) {
             return false;
         }
@@ -248,7 +220,7 @@ public abstract class UniFile {
     /**
      * Return a Uri for the underlying document represented by this file. This
      * can be used with other platform APIs to manipulate or share the
-     * underlying content. You can use {@link #isTreeUri(Uri)} to
+     * underlying content. You can use {@link #isTreeDocumentUri(Uri)} to
      * test if the returned Uri is backed by a
      * {@link android.provider.DocumentsProvider}.
      *
