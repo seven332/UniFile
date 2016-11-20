@@ -52,7 +52,12 @@ class TrickOutputStream extends FileOutputStream {
 
     @NonNull
     static OutputStream create(Context context, Uri uri, String mode) throws IOException {
-        ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, mode);
+        ParcelFileDescriptor pfd;
+        try {
+            pfd = context.getContentResolver().openFileDescriptor(uri, mode);
+        } catch (SecurityException e) {
+            throw new IOException("Permission Denial");
+        }
         if (pfd == null) {
             throw new IOException("Can't get ParcelFileDescriptor");
         }

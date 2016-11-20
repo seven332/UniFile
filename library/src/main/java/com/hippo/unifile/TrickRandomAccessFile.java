@@ -117,6 +117,12 @@ final class TrickRandomAccessFile extends RandomAccessFile {
                 pfd.close();
             }
             throw e;
+        } catch (SecurityException e) {
+            // Close ParcelFileDescriptor if failed
+            if (pfd != null) {
+                pfd.close();
+            }
+            throw new IOException("Permission Denial");
         }
     }
 
