@@ -36,10 +36,10 @@ final class MediaContract {
     }
 
     public static long lastModified(Context context, Uri self) {
-        return Contracts.queryForLong(context, self, MediaStore.MediaColumns.DATE_MODIFIED, 0);
+        return Contracts.queryForLong(context, self, MediaStore.MediaColumns.DATE_MODIFIED, -1L);
     }
 
     public static long length(Context context, Uri self) {
-        return Contracts.queryForLong(context, self, MediaStore.MediaColumns.SIZE, 0);
+        return Contracts.queryForLong(context, self, MediaStore.MediaColumns.SIZE, -1L);
     }
 }
