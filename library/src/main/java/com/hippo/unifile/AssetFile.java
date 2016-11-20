@@ -182,6 +182,10 @@ class AssetFile extends UniFile {
     @Nullable
     @Override
     public UniFile[] listFiles(FilenameFilter filter) {
+        if (filter == null) {
+            return listFiles();
+        }
+
         try {
             String[] files = mAssetManager.list(mPath);
             if (files == null || files.length == 0) {
