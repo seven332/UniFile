@@ -157,7 +157,12 @@ class SingleDocumentFile extends UniFile {
     @NonNull
     @Override
     public OutputStream openOutputStream() throws IOException {
-        OutputStream os = mContext.getContentResolver().openOutputStream(mUri);
+        OutputStream os;
+        try {
+            os = mContext.getContentResolver().openOutputStream(mUri);
+        } catch (SecurityException e) {
+            throw new IOException("Permission Denial");
+        }
         if (os == null) {
             throw new IOException("Can't open OutputStream");
         }
@@ -167,7 +172,12 @@ class SingleDocumentFile extends UniFile {
     @NonNull
     @Override
     public OutputStream openOutputStream(boolean append) throws IOException {
-        OutputStream os = mContext.getContentResolver().openOutputStream(mUri, append ? "wa" : "w");
+        OutputStream os;
+        try {
+            os = mContext.getContentResolver().openOutputStream(mUri, append ? "wa" : "w");
+        } catch (SecurityException e) {
+            throw new IOException("Permission Denial");
+        }
         if (os == null) {
             throw new IOException("Can't open OutputStream");
         }
@@ -177,7 +187,12 @@ class SingleDocumentFile extends UniFile {
     @NonNull
     @Override
     public InputStream openInputStream() throws IOException {
-        InputStream is = mContext.getContentResolver().openInputStream(mUri);
+        InputStream is;
+        try {
+            is = mContext.getContentResolver().openInputStream(mUri);
+        } catch (SecurityException e) {
+            throw new IOException("Permission Denial");
+        }
         if (is == null) {
             throw new IOException("Can't open InputStream");
         }

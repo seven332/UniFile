@@ -184,7 +184,12 @@ class MediaFile extends UniFile {
     @NonNull
     @Override
     public InputStream openInputStream() throws IOException {
-        InputStream is = mContext.getContentResolver().openInputStream(mUri);
+        InputStream is;
+        try {
+            is = mContext.getContentResolver().openInputStream(mUri);
+        } catch (SecurityException e) {
+            throw new IOException("Permission Denial");
+        }
         if (is == null) {
             throw new IOException("Can't open InputStream");
         }
