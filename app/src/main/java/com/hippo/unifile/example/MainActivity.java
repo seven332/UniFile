@@ -1,19 +1,12 @@
 package com.hippo.unifile.example;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
-
-import com.hippo.unifile.UniFile;
-import com.hippo.unifile.UriTestCreator;
-
-import java.io.IOException;
-import java.io.RandomAccessFile;
-
-import static android.content.ContentValues.TAG;
+import android.view.View;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
@@ -23,23 +16,39 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        /*
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-            try {
-                startActivityForResult(intent, REQUEST_CODE_DOCUMENT);
-            } catch (ActivityNotFoundException e) {
-                Toast.makeText(this, "error_cant_find_activity", Toast.LENGTH_SHORT).show();
+
+        findViewById(R.id.action_get_content).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("*/*");
+                startActivityForResult(intent, REQUEST_CODE_SELECT);
             }
-        }
-        */
+        });
 
 
+        findViewById(R.id.action_open_document_tree).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                    try {
+                        startActivityForResult(intent, REQUEST_CODE_DOCUMENT);
+                    } catch (ActivityNotFoundException e) {
+                        Toast.makeText(MainActivity.this, "error_cant_find_activity", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
 
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
-        startActivityForResult(intent, REQUEST_CODE_SELECT);
+        findViewById(R.id.asset).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO
+            }
+        });
     }
 
     @Override
@@ -48,173 +57,8 @@ public class MainActivity extends Activity {
             return;
         }
 
-        if (requestCode == REQUEST_CODE_DOCUMENT) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Uri treeUri = data.getData();
-                UniFile dir = UniFile.fromTreeUri(this, treeUri);
-                UniFile file = dir.createFile("aaa.txt");
-
-
-                Uri uri = file.getUri();
-                Log.i(TAG, "Start test: " + uri.toString());
-                test(new UriTestCreator(this, uri));
-                Log.i(TAG, "End test");
-            }
-        } else if (requestCode == REQUEST_CODE_SELECT) {
-            Uri uri = data.getData();
-            Log.i(TAG, "Start test: " + uri.toString());
-            test(new UriTestCreator(this, uri));
-            Log.i(TAG, "End test");
-        }
-    }
-
-    public void test(TestCreator creator) {
-        try {
-            RandomAccessFile raf;
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_close(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_getChannel(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_getFD(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_getFilePointer(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_length(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_read_write(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_read$B(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_read$BII(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_read_writeBoolean(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_read_writeByte(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_read_writeChar(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_read_writeDouble(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_read_writeFloat(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_read_writeInt(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_read_writeLong(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_read_writeShort(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_read_writeUTF(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_readFully$B_writeBytesLjava_lang_String(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_readFully$BII(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_readUnsignedByte(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_readUnsignedShort(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_readLine(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_seekJ(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_skipBytesI(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_setLengthJ(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_write$B(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_write$BII(creator);
-
-            raf = creator.createRandomAccessFile("rw");
-            raf.setLength(0);
-            raf.close();
-            RandomAccessFileTest.test_writeCharsLjava_lang_String(creator);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Intent intent = new Intent(this, FileActivity.class);
+        intent.setData(data.getData());
+        startActivity(intent);
     }
 }
