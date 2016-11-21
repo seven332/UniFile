@@ -67,13 +67,25 @@ public abstract class UniFile {
 
     /**
      * Create a {@link UniFile} representing the given {@link File}.
-
+     *
      * @param file the file to wrap
      * @return the {@link UniFile} representing the given {@link File}.
      */
     @Nullable
     public static UniFile fromFile(@Nullable File file) {
         return file != null ? new RawFile(null, file) : null;
+    }
+
+    /**
+     * Create a {@link UniFile} representing the given asset File.
+     */
+    public static UniFile fromAsset(AssetManager assetManager, String filename) {
+        Uri uri = new Uri.Builder()
+                .scheme(ContentResolver.SCHEME_FILE)
+                .authority("")
+                .path("android_asset/" + filename)
+                .build();
+        return fromAssetUri(assetManager, uri);
     }
 
     private static final int ASSET_PATH_PREFIX_LENGTH = "/android_asset/".length();
