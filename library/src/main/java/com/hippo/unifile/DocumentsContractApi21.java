@@ -37,6 +37,19 @@ final class DocumentsContractApi21 {
     private static final String PATH_DOCUMENT = "document";
     private static final String PATH_TREE = "tree";
 
+    public static boolean isTreeDocumentUri(Context context, Uri self) {
+        if (DocumentsContractApi19.isContentUri(self) &&
+                DocumentsContractApi19.isDocumentsProvider(context, self.getAuthority())) {
+            final List<String> paths = self.getPathSegments();
+            if (paths.size() == 2) {
+                return PATH_TREE.equals(paths.get(0));
+            } else if (paths.size() == 4) {
+                return PATH_TREE.equals(paths.get(0)) && PATH_DOCUMENT.equals(paths.get(2));
+            }
+        }
+        return false;
+    }
+
     public static Uri createFile(Context context, Uri self, String mimeType,
             String displayName) {
         try {
@@ -54,8 +67,20 @@ final class DocumentsContractApi21 {
     }
 
     public static Uri prepareTreeUri(Uri treeUri) {
-        return DocumentsContract.buildDocumentUriUsingTree(treeUri,
-                DocumentsContract.getTreeDocumentId(treeUri));
+        String documentId;
+        try {
+            documentId = DocumentsContract.getDocumentId(treeUri);
+            if (documentId == null) {
+                throw new IllegalArgumentException();
+            }
+        } catch (Exception e) {
+            // IllegalArgumentException will be raised
+            // if DocumentsContract.getDocumentId() failed.
+            // But it isn't mentioned the document,
+            // catch all kinds of Exception for safety.
+            documentId = DocumentsContract.getTreeDocumentId(treeUri);
+        }
+        return DocumentsContract.buildDocumentUriUsingTree(treeUri, documentId);
     }
 
     public static String getTreeDocumentPath(Uri documentUri) {

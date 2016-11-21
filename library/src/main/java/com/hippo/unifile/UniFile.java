@@ -87,8 +87,7 @@ public abstract class UniFile {
 
     // Create SingleDocumentFile from single document file uri
     private static UniFile fromSingleDocumentUri(Context context, Uri singleUri) {
-        final int version = Build.VERSION.SDK_INT;
-        if (version >= 19) {
+        if (Build.VERSION.SDK_INT >= 19) {
             return new SingleDocumentFile(null, context, singleUri);
         } else {
             return null;
@@ -97,8 +96,7 @@ public abstract class UniFile {
 
     // Create TreeDocumentFile from tree document file uri
     private static UniFile fromTreeDocumentUri(Context context, Uri treeUri) {
-        final int version = Build.VERSION.SDK_INT;
-        if (version >= 21) {
+        if (Build.VERSION.SDK_INT >= 21) {
             return new TreeDocumentFile(null, context,
                     DocumentsContractApi21.prepareTreeUri(treeUri));
         } else {
@@ -136,7 +134,7 @@ public abstract class UniFile {
                 return fromFile(new File(uri.getPath()));
             }
         } else if (isDocumentUri(context, uri)) {
-            if (isTreeDocumentUri(uri)) {
+            if (isTreeDocumentUri(context, uri)) {
                 return fromTreeDocumentUri(context, uri);
             } else {
                 return fromSingleDocumentUri(context, uri);
@@ -160,24 +158,16 @@ public abstract class UniFile {
      * {@link android.provider.DocumentsProvider}.
      */
     public static boolean isDocumentUri(Context context, Uri uri) {
-        final int version = Build.VERSION.SDK_INT;
-        if (version >= 19) {
-            return DocumentsContractApi19.isDocumentUri(context, uri);
-        } else {
-            return false;
-        }
+        return uri != null && Build.VERSION.SDK_INT >= 19 &&
+                DocumentsContractApi19.isDocumentUri(context, uri);
     }
 
     /**
      * Test if given Uri is TreeDocumentUri
      */
-    public static boolean isTreeDocumentUri(Uri uri) {
-        if (uri == null) {
-            return false;
-        }
-        final List<String> paths = uri.getPathSegments();
-        return (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())
-                && paths.size() >= 2 && "tree".equals(paths.get(0)));
+    public static boolean isTreeDocumentUri(Context context, Uri uri) {
+        return uri != null && Build.VERSION.SDK_INT >= 21 &&
+                DocumentsContractApi21.isTreeDocumentUri(context, uri);
     }
 
     /**
@@ -223,7 +213,7 @@ public abstract class UniFile {
     /**
      * Return a Uri for the underlying document represented by this file. This
      * can be used with other platform APIs to manipulate or share the
-     * underlying content. You can use {@link #isTreeDocumentUri(Uri)} to
+     * underlying content. You can use {@link #isTreeDocumentUri(Context, Uri)} to
      * test if the returned Uri is backed by a
      * {@link android.provider.DocumentsProvider}.
      *

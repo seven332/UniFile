@@ -22,16 +22,19 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
+import java.util.List;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 final class DocumentsContractApi19 {
@@ -39,13 +42,43 @@ final class DocumentsContractApi19 {
 
     private static final String TAG = DocumentsContractApi19.class.getSimpleName();
 
-    private static final String DOCUMENT_EXTERNAL_STORAGE_AUTHORITY = "com.android.externalstorage.documents";
-    private static final String DOCUMENT_DOWNLOAD_AUTHORITY = "com.android.providers.downloads.documents";
-    private static final String DOCUMENT_MEDIA_AUTHORITY = "com.android.providers.media.documents";
+    private static final String AUTHORITY_DOCUMENT_EXTERNAL_STORAGE = "com.android.externalstorage.documents";
+    private static final String AUTHORITY_DOCUMENT_DOWNLOAD = "com.android.providers.downloads.documents";
+    private static final String AUTHORITY_DOCUMENT_MEDIA = "com.android.providers.media.documents";
 
+    private static final String PROVIDER_INTERFACE = "android.content.action.DOCUMENTS_PROVIDER";
 
+    private static final String PATH_DOCUMENT = "document";
+    private static final String PATH_TREE = "tree";
+
+    public static boolean isContentUri(@Nullable Uri uri) {
+        return uri != null && ContentResolver.SCHEME_CONTENT.equals(uri.getScheme());
+    }
+
+    public static boolean isDocumentsProvider(Context context, String authority) {
+        final Intent intent = new Intent(PROVIDER_INTERFACE);
+        final List<ResolveInfo> infos = context.getPackageManager()
+                .queryIntentContentProviders(intent, 0);
+        for (ResolveInfo info : infos) {
+            if (authority.equals(info.providerInfo.authority)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // It is different from DocumentsContract.isDocumentUri().
+    // It accepts uri like content://com.android.externalstorage.documents/tree/primary%3AHaHa as well.
     public static boolean isDocumentUri(Context context, Uri self) {
-        return DocumentsContract.isDocumentUri(context, self);
+        if (isContentUri(self) && isDocumentsProvider(context, self.getAuthority())) {
+            final List<String> paths = self.getPathSegments();
+            if (paths.size() == 2) {
+                return PATH_DOCUMENT.equals(paths.get(0)) || PATH_TREE.equals(paths.get(0));
+            } else if (paths.size() == 4) {
+                return PATH_TREE.equals(paths.get(0)) && PATH_DOCUMENT.equals(paths.get(2));
+            }
+        }
+        return false;
     }
 
     public static String getName(Context context, Uri self) {
@@ -72,7 +105,7 @@ final class DocumentsContractApi19 {
 
         try {
             final String authority = self.getAuthority();
-            if (DOCUMENT_EXTERNAL_STORAGE_AUTHORITY.equals(authority)) {
+            if (AUTHORITY_DOCUMENT_EXTERNAL_STORAGE.equals(authority)) {
                 // Get type and path
                 final String docId = DocumentsContract.getDocumentId(self);
                 final String[] split = docId.split(":");
@@ -99,14 +132,14 @@ final class DocumentsContractApi19 {
                         return null;
                     }
                 }
-            } else if (DOCUMENT_DOWNLOAD_AUTHORITY.equals(authority)) {
+            } else if (AUTHORITY_DOCUMENT_DOWNLOAD.equals(authority)) {
                 final String id = DocumentsContract.getDocumentId(self);
 
                 final Uri contentUri = ContentUris.withAppendedId(
                         Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
 
                 return Contracts.queryForString(context, contentUri, MediaStore.MediaColumns.DATA, null);
-            } else if (DOCUMENT_MEDIA_AUTHORITY.equals(authority)) {
+            } else if (AUTHORITY_DOCUMENT_MEDIA.equals(authority)) {
                 // Get type and id
                 final String docId = DocumentsContract.getDocumentId(self);
                 final String[] split = docId.split(":");
@@ -121,7 +154,7 @@ final class DocumentsContractApi19 {
                 } else if ("audio".equals(type)) {
                     baseUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
                 } else {
-                    Log.d(TAG, "Unknown type in " + DOCUMENT_MEDIA_AUTHORITY + ": " + type);
+                    Log.d(TAG, "Unknown type in " + AUTHORITY_DOCUMENT_MEDIA + ": " + type);
                     return null;
                 }
 
