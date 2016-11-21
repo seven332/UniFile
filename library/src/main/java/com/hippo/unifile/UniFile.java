@@ -87,7 +87,7 @@ public abstract class UniFile {
 
     // Create SingleDocumentFile from single document file uri
     private static UniFile fromSingleDocumentUri(Context context, Uri singleUri) {
-        if (Build.VERSION.SDK_INT >= 19) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             return new SingleDocumentFile(null, context, singleUri);
         } else {
             return null;
@@ -96,7 +96,7 @@ public abstract class UniFile {
 
     // Create TreeDocumentFile from tree document file uri
     private static UniFile fromTreeDocumentUri(Context context, Uri treeUri) {
-        if (Build.VERSION.SDK_INT >= 21) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return new TreeDocumentFile(null, context,
                     DocumentsContractApi21.prepareTreeUri(treeUri));
         } else {
@@ -158,7 +158,7 @@ public abstract class UniFile {
      * {@link android.provider.DocumentsProvider}.
      */
     public static boolean isDocumentUri(Context context, Uri uri) {
-        return uri != null && Build.VERSION.SDK_INT >= 19 &&
+        return uri != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT &&
                 DocumentsContractApi19.isDocumentUri(context, uri);
     }
 
@@ -166,7 +166,7 @@ public abstract class UniFile {
      * Test if given Uri is TreeDocumentUri
      */
     public static boolean isTreeDocumentUri(Context context, Uri uri) {
-        return uri != null && Build.VERSION.SDK_INT >= 21 &&
+        return uri != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
                 DocumentsContractApi21.isTreeDocumentUri(context, uri);
     }
 
