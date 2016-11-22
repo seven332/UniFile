@@ -151,7 +151,7 @@ public abstract class UniFile {
             } else {
                 return fromSingleDocumentUri(context, uri);
             }
-        } else if (isMediaUri(context, uri)) {
+        } else if (isMediaUri(uri)) {
             return new MediaFile(context, uri);
         } else {
             return null;
@@ -198,8 +198,8 @@ public abstract class UniFile {
     /**
      * Test if given Uri is MediaUri
      */
-    public static boolean isMediaUri(Context context, Uri uri) {
-        return MediaContract.getName(context, uri) != null;
+    public static boolean isMediaUri(Uri uri) {
+        return uri != null && ContentResolver.SCHEME_CONTENT.equals(uri.getScheme());
     }
 
     /**
