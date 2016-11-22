@@ -28,12 +28,28 @@
         android:text="Select file"/>
 
     <Button
+        android:id="@+id/action_pick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textAllCaps="false"
+        android:text="Intent.ACTION_PICK"/>
+
+    <Button
         android:id="@+id/action_get_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textAllCaps="false"
         android:text="Intent.ACTION_GET_CONTENT"/>
+
+    <Button
+        android:id="@+id/action_open_document"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textAllCaps="false"
+        android:text="Intent.ACTION_OPEN_DOCUMENT"/>
 
     <Button
         android:id="@+id/action_open_document_tree"
