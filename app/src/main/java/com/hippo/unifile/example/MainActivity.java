@@ -67,6 +67,13 @@ public class MainActivity extends Activity {
                 startFileActivity(UniFile.fromAsset(getAssets(), "file2/haha").getUri());
             }
         });
+
+        findViewById(R.id.resource).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startFileActivity(UniFile.fromResource(MainActivity.this, R.layout.activity_file).getUri());
+            }
+        });
     }
 
     @Override

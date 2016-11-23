@@ -65,6 +65,14 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textAllCaps="false"
-        android:text="ASSET_FILE"/>
+        android:text="Asset File"/>
+
+    <Button
+        android:id="@+id/resource"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textAllCaps="false"
+        android:text="Resource File"/>
 
 </LinearLayout>
