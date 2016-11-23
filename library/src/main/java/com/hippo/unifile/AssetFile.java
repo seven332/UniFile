@@ -20,6 +20,7 @@ package com.hippo.unifile;
  * Created by Hippo on 11/16/2016.
  */
 
+import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -239,6 +240,15 @@ class AssetFile extends UniFile {
     @NonNull
     @Override
     public UniRandomAccessFile createRandomAccessFile(String mode) throws IOException {
-        return new RawRandomAccessFile(TrickRandomAccessFile.create(mAssetManager, mPath, mode));
+        if (!"r".equals(mode)) {
+            throw new IOException("Unsupported mode: " + mode);
+        }
+
+        AssetFileDescriptor afd = mAssetManager.openFd(mPath);
+        if (afd == null) {
+            throw new IOException("Can't open AssetFileDescriptor");
+        }
+
+        return new RawRandomAccessFile(TrickRandomAccessFile.create(afd, mode));
     }
 }

@@ -18,6 +18,7 @@ package com.hippo.unifile;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -206,6 +207,17 @@ class SingleDocumentFile extends UniFile {
         if (!ensureFile()) {
             throw new IOException("Can't make sure it is file");
         }
-        return new RawRandomAccessFile(TrickRandomAccessFile.create(mContext, mUri, mode));
+
+        ParcelFileDescriptor pfd;
+        try {
+            pfd = mContext.getContentResolver().openFileDescriptor(mUri, mode);
+        } catch (SecurityException e) {
+            throw new IOException("Permission Denial");
+        }
+        if (pfd == null) {
+            throw new IOException("Can't open ParcelFileDescriptor");
+        }
+
+        return new RawRandomAccessFile(TrickRandomAccessFile.create(pfd, mode));
     }
 }

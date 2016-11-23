@@ -20,6 +20,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -88,6 +89,21 @@ public abstract class UniFile {
         return fromAssetUri(assetManager, uri);
     }
 
+    /**
+     * Create a {@link UniFile} representing the given resource id.
+     */
+    public static UniFile fromResource(Context context, int id) {
+        final Resources r = context.getResources();
+        final String p = context.getPackageName();
+        final String name;
+        try {
+            name = r.getResourceEntryName(id);
+        } catch (Resources.NotFoundException e) {
+            return null;
+        }
+        return new ResourceFile(r, p, id, name);
+    }
+
     private static final int ASSET_PATH_PREFIX_LENGTH = "/android_asset/".length();
 
     // Create AssetFile from asset file uri
@@ -154,7 +170,12 @@ public abstract class UniFile {
         } else if (isMediaUri(uri)) {
             return new MediaFile(context, uri);
         } else {
-            return null;
+            ResourcesContract.OpenResourceResult result = ResourcesContract.openResource(context, uri);
+            if (result != null) {
+                return new ResourceFile(result.r, result.p, result.id, result.name);
+            } else {
+                return null;
+            }
         }
     }
 

@@ -16,10 +16,7 @@
 
 package com.hippo.unifile;
 
-import android.content.Context;
 import android.content.res.AssetFileDescriptor;
-import android.content.res.AssetManager;
-import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -93,15 +90,14 @@ final class TrickRandomAccessFile extends RandomAccessFile {
     }
 
     @NonNull
-    static RandomAccessFile create(Context context, Uri uri, String mode) throws IOException {
+    static RandomAccessFile create(ParcelFileDescriptor pfd, String mode) throws IOException {
+        if (pfd == null) {
+            throw new IOException("ParcelFileDescriptor is null");
+        }
+
         checkReflection();
 
-        ParcelFileDescriptor pfd = null;
         try {
-            pfd = context.getContentResolver().openFileDescriptor(uri, mode);
-            if (pfd == null) {
-                throw new IOException("Can't get ParcelFileDescriptor");
-            }
             FileDescriptor fd = pfd.getFileDescriptor();
             if (fd == null) {
                 throw new IOException("Can't get FileDescriptor");
@@ -109,38 +105,23 @@ final class TrickRandomAccessFile extends RandomAccessFile {
 
             TrickRandomAccessFile file = create(fd, mode);
             file.mPfd = pfd;
-
             return file;
         } catch (IOException e) {
             // Close ParcelFileDescriptor if failed
-            if (pfd != null) {
-                pfd.close();
-            }
+            pfd.close();
             throw e;
-        } catch (SecurityException e) {
-            // Close ParcelFileDescriptor if failed
-            if (pfd != null) {
-                pfd.close();
-            }
-            throw new IOException("Permission Denial");
         }
     }
 
     @NonNull
-    static RandomAccessFile create(AssetManager assetManager, String path, String mode) throws IOException {
-        // Check mode
-        if (!"r".equals(mode)) {
-            throw new IOException("Non-supported mode for asset file: " + mode);
+    static RandomAccessFile create(AssetFileDescriptor afd, String mode) throws IOException {
+        if (afd == null) {
+            throw new IOException("AssetFileDescriptor is null");
         }
 
         checkReflection();
 
-        AssetFileDescriptor afd = null;
         try {
-            afd = assetManager.openFd(path);
-            if (afd == null) {
-                throw new IOException("Can't get AssetFileDescriptor");
-            }
             FileDescriptor fd = afd.getFileDescriptor();
             if (fd == null) {
                 throw new IOException("Can't get FileDescriptor");
@@ -148,13 +129,10 @@ final class TrickRandomAccessFile extends RandomAccessFile {
 
             TrickRandomAccessFile file = create(fd, mode);
             file.mAfd = afd;
-
             return file;
         } catch (IOException e) {
             // Close AssetFileDescriptor if failed
-            if (afd != null) {
-                afd.close();
-            }
+            afd.close();
             throw e;
         }
     }
