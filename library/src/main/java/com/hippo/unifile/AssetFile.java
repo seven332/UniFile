@@ -20,6 +20,7 @@ package com.hippo.unifile;
  * Created by Hippo on 11/16/2016.
  */
 
+import android.content.ContentResolver;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.net.Uri;
@@ -57,7 +58,11 @@ class AssetFile extends UniFile {
     @NonNull
     @Override
     public Uri getUri() {
-        return new Uri.Builder().scheme("file").path("/android_asset/" + mPath).build();
+        return new Uri.Builder()
+                .scheme(ContentResolver.SCHEME_FILE)
+                .authority("")
+                .path("android_asset/" + mPath)
+                .build();
     }
 
     @Nullable
