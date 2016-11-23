@@ -135,7 +135,11 @@ class TreeDocumentFile extends UniFile {
 
     @Override
     public long length() {
-        return DocumentsContractApi19.length(mContext, mUri);
+        if (isDirectory()) {
+            return -1L;
+        } else {
+            return DocumentsContractApi19.length(mContext, mUri);
+        }
     }
 
     @Override
@@ -246,6 +250,10 @@ class TreeDocumentFile extends UniFile {
     @NonNull
     @Override
     public OutputStream openOutputStream() throws IOException {
+        if (isDirectory()) {
+            throw new IOException("Can't open OutputStream from a directory");
+        }
+
         OutputStream os;
         try {
             os = mContext.getContentResolver().openOutputStream(mUri);
@@ -261,6 +269,10 @@ class TreeDocumentFile extends UniFile {
     @NonNull
     @Override
     public OutputStream openOutputStream(boolean append) throws IOException {
+        if (isDirectory()) {
+            throw new IOException("Can't open OutputStream from a directory");
+        }
+
         OutputStream os;
         try {
             os = mContext.getContentResolver().openOutputStream(mUri, append ? "wa" : "w");
@@ -276,6 +288,10 @@ class TreeDocumentFile extends UniFile {
     @NonNull
     @Override
     public InputStream openInputStream() throws IOException {
+        if (isDirectory()) {
+            throw new IOException("Can't open InputStream from a directory");
+        }
+
         InputStream is;
         try {
             is = mContext.getContentResolver().openInputStream(mUri);
