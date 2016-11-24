@@ -70,13 +70,13 @@ class TreeDocumentFile extends UniFile {
                 String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
                 if (!TextUtils.isEmpty(mimeType)) {
                     final Uri result = DocumentsContractApi21.createFile(mContext, mUri, mimeType, name);
-                    return (result != null) ? new TreeDocumentFile(this, mContext, result, displayName) : null;
+                    return (result != null) ? new TreeDocumentFile(this, mContext, result) : null;
                 }
             }
 
             // Not dot in displayName or dot is the first char or can't get MimeType
             final Uri result = DocumentsContractApi21.createFile(mContext, mUri, "application/octet-stream", displayName);
-            return (result != null) ? new TreeDocumentFile(this, mContext, result, displayName) : null;
+            return (result != null) ? new TreeDocumentFile(this, mContext, result) : null;
         }
     }
 
@@ -92,7 +92,7 @@ class TreeDocumentFile extends UniFile {
             }
         } else {
             final Uri result = DocumentsContractApi21.createDirectory(mContext, mUri, displayName);
-            return (result != null) ? new TreeDocumentFile(this, mContext, result, displayName) : null;
+            return (result != null) ? new TreeDocumentFile(this, mContext, result) : null;
         }
     }
 
@@ -210,7 +210,7 @@ class TreeDocumentFile extends UniFile {
         final UniFile[] resultFiles = new UniFile[result.length];
         for (int i = 0, n = result.length; i < n; i++) {
             Uri uri = result[i];
-            resultFiles[i] = new TreeDocumentFile(this, mContext, uri, uri.getLastPathSegment());
+            resultFiles[i] = new TreeDocumentFile(this, mContext, uri);
         }
         return resultFiles;
     }
@@ -241,7 +241,7 @@ class TreeDocumentFile extends UniFile {
     public UniFile findFile(String displayName) {
         Uri childUri = DocumentsContractApi21.buildChildUri(mUri, displayName);
         return DocumentsContractApi19.exists(mContext, childUri) ?
-                new TreeDocumentFile(this, mContext, childUri, displayName) : null;
+                new TreeDocumentFile(this, mContext, childUri) : null;
     }
 
     @Override
