@@ -229,9 +229,9 @@ class TreeDocumentFile extends UniFile {
         final ArrayList<UniFile> results = new ArrayList<>();
         for (int i = 0, n = result.length; i < n; i++) {
             Uri uri = result[i];
-            String name = uri.getLastPathSegment();
-            if (filter.accept(this, name)) {
-                results.add(new TreeDocumentFile(this, mContext, uri, name));
+            String name = DocumentsContractApi19.getName(mContext, uri);
+            if (name != null && filter.accept(this, name)) {
+                results.add(new TreeDocumentFile(this, mContext, uri));
             }
         }
         return results.toArray(new UniFile[results.size()]);
