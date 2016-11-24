@@ -202,6 +202,10 @@ class TreeDocumentFile extends UniFile {
 
     @Override
     public UniFile[] listFiles() {
+        if (!isDirectory()) {
+            return null;
+        }
+
         final Uri[] result = DocumentsContractApi21.listFiles(mContext, mUri);
         final UniFile[] resultFiles = new UniFile[result.length];
         for (int i = 0, n = result.length; i < n; i++) {
@@ -215,6 +219,10 @@ class TreeDocumentFile extends UniFile {
     public UniFile[] listFiles(FilenameFilter filter) {
         if (filter == null) {
             return listFiles();
+        }
+
+        if (!isDirectory()) {
+            return null;
         }
 
         final Uri[] result = DocumentsContractApi21.listFiles(mContext, mUri);
