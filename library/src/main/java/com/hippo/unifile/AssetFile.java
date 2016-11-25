@@ -45,14 +45,22 @@ class AssetFile extends UniFile {
 
     @Override
     public UniFile createFile(String displayName) {
-        // Not supported
-        return null;
+        UniFile file = findFile(displayName);
+        if (file != null && file.isFile()) {
+            return file;
+        } else {
+            return null;
+        }
     }
 
     @Override
     public UniFile createDirectory(String displayName) {
-        // Not supported
-        return null;
+        UniFile file = findFile(displayName);
+        if (file != null && file.isDirectory()) {
+            return file;
+        } else {
+            return null;
+        }
     }
 
     @NonNull
@@ -150,8 +158,7 @@ class AssetFile extends UniFile {
     @Nullable
     @Override
     public UniFile subFile(String displayName) {
-        // Not supported
-        return null;
+        return findFile(displayName);
     }
 
     @Override
@@ -215,7 +222,22 @@ class AssetFile extends UniFile {
     @Nullable
     @Override
     public UniFile findFile(String displayName) {
-        return null;
+        try {
+            String[] files = mAssetManager.list(mPath);
+            if (files == null || files.length == 0) {
+                return null;
+            }
+
+            for (String f : files) {
+                if (displayName.equals(f)) {
+                    return new AssetFile(this, mAssetManager, mPath + "/" + displayName);
+                }
+            }
+
+            return null;
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     @Override
