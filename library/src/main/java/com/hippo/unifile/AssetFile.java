@@ -184,7 +184,7 @@ class AssetFile extends UniFile {
             int length = files.length;
             UniFile[] results = new UniFile[length];
             for (int i = 0; i < length; i++) {
-                results[i] = new AssetFile(this, mAssetManager, mPath + "/" + files[i]);
+                results[i] = new AssetFile(this, mAssetManager, Utils.resolve(mPath, files[i]));
             }
             return results;
         } catch (IOException e) {
@@ -210,7 +210,7 @@ class AssetFile extends UniFile {
             for (int i = 0; i < length; i++) {
                 String name = files[i];
                 if (filter.accept(this, name)) {
-                    results.add(new AssetFile(this, mAssetManager, mPath + "/" + files[i]));
+                    results.add(new AssetFile(this, mAssetManager, Utils.resolve(mPath, files[i])));
                 }
             }
             return results.toArray(new UniFile[results.size()]);
@@ -230,7 +230,7 @@ class AssetFile extends UniFile {
 
             for (String f : files) {
                 if (displayName.equals(f)) {
-                    return new AssetFile(this, mAssetManager, mPath + "/" + displayName);
+                    return new AssetFile(this, mAssetManager, Utils.resolve(mPath, displayName));
                 }
             }
 

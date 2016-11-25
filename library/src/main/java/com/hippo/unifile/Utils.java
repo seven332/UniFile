@@ -72,4 +72,19 @@ class Utils {
 
         return (index != n) ? new String(normalized, 0, index) : pathname;
     }
+
+    // Invariant: Both |parent| and |child| are normalized paths.
+    static String resolve(String parent, String child) {
+        if (child.length() == 0 || child.equals("/")) {
+            return parent;
+        }
+
+        if (child.charAt(0) == '/') {
+            if (parent.equals("/")) return child;
+            return parent + child;
+        }
+
+        if (parent.equals("/")) return parent + child;
+        return parent + '/' + child;
+    }
 }
