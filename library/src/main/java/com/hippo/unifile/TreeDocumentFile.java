@@ -265,8 +265,8 @@ class TreeDocumentFile extends UniFile {
         OutputStream os;
         try {
             os = mContext.getContentResolver().openOutputStream(mUri);
-        } catch (SecurityException e) {
-            throw new IOException("Permission Denial");
+        } catch (Exception e) {
+            throw new IOException("Can't open OutputStream");
         }
         if (os == null) {
             throw new IOException("Can't open OutputStream");
@@ -284,8 +284,8 @@ class TreeDocumentFile extends UniFile {
         OutputStream os;
         try {
             os = mContext.getContentResolver().openOutputStream(mUri, append ? "wa" : "w");
-        } catch (SecurityException e) {
-            throw new IOException("Permission Denial");
+        } catch (Exception e) {
+            throw new IOException("Can't open OutputStream");
         }
         if (os == null) {
             throw new IOException("Can't open OutputStream");
@@ -303,8 +303,8 @@ class TreeDocumentFile extends UniFile {
         InputStream is;
         try {
             is = mContext.getContentResolver().openInputStream(mUri);
-        } catch (SecurityException e) {
-            throw new IOException("Permission Denial");
+        } catch (Exception e) {
+            throw new IOException("Can't open InputStream");
         }
         if (is == null) {
             throw new IOException("Can't open InputStream");
@@ -323,8 +323,8 @@ class TreeDocumentFile extends UniFile {
         ParcelFileDescriptor pfd;
         try {
             pfd = mContext.getContentResolver().openFileDescriptor(mUri, mode);
-        } catch (SecurityException e) {
-            throw new IOException("Permission Denial");
+        } catch (Exception e) {
+            throw new IOException("Can't open ParcelFileDescriptor");
         }
         if (pfd == null) {
             throw new IOException("Can't open ParcelFileDescriptor");

@@ -55,7 +55,7 @@ final class DocumentsContractApi21 {
         try {
             return DocumentsContract.createDocument(context.getContentResolver(), self, mimeType,
                     displayName);
-        } catch (SecurityException e) {
+        } catch (Exception e) {
             // Maybe user ejects tf card
             Log.e(TAG, "Failed to createFile", e);
             return null;
@@ -126,7 +126,7 @@ final class DocumentsContractApi21 {
     public static Uri renameTo(Context context, Uri self, String displayName) {
         try {
             return DocumentsContract.renameDocument(context.getContentResolver(), self, displayName);
-        } catch (SecurityException e) {
+        } catch (Exception e) {
             // Maybe user ejects tf card
             Log.e(TAG, "Failed to renameTo", e);
             return null;

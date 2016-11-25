@@ -234,7 +234,7 @@ final class DocumentsContractApi19 {
     public static boolean delete(Context context, Uri self) {
         try {
             return DocumentsContract.deleteDocument(context.getContentResolver(), self);
-        } catch (SecurityException e) {
+        } catch (Exception e) {
             // Maybe user ejects tf card
             Log.e(TAG, "Failed to renameTo", e);
             return false;

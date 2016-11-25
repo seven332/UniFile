@@ -188,8 +188,8 @@ class MediaFile extends UniFile {
         InputStream is;
         try {
             is = mContext.getContentResolver().openInputStream(mUri);
-        } catch (SecurityException e) {
-            throw new IOException("Permission Denial");
+        } catch (Exception e) {
+            throw new IOException("Can't open InputStream");
         }
         if (is == null) {
             throw new IOException("Can't open InputStream");
@@ -204,8 +204,8 @@ class MediaFile extends UniFile {
 
         try {
             pfd = mContext.getContentResolver().openFileDescriptor(mUri, mode);
-        } catch (SecurityException e) {
-            throw new IOException("Permission Denial");
+        } catch (Exception e) {
+            throw new IOException("Can't open ParcelFileDescriptor");
         }
         if (pfd == null) {
             throw new IOException("Can't open ParcelFileDescriptor");
