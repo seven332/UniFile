@@ -21,6 +21,7 @@ import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,7 +62,12 @@ class MediaFile extends UniFile {
 
     @Override
     public String getType() {
-        return MediaContract.getType(mContext, mUri);
+        final String type = MediaContract.getType(mContext, mUri);
+        if (!TextUtils.isEmpty(type)) {
+            return type;
+        } else {
+            return Utils.getTypeForName(getName());
+        }
     }
 
     @Nullable

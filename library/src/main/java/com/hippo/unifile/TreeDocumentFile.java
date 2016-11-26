@@ -117,7 +117,12 @@ class TreeDocumentFile extends UniFile {
 
     @Override
     public String getType() {
-        return DocumentsContractApi19.getType(mContext, mUri);
+        final String type = DocumentsContractApi19.getType(mContext, mUri);
+        if (!TextUtils.isEmpty(type)) {
+            return type;
+        } else {
+            return Utils.getTypeForName(getName());
+        }
     }
 
     @Nullable
