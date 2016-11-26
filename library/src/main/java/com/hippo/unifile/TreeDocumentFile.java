@@ -53,6 +53,10 @@ class TreeDocumentFile extends UniFile {
 
     @Override
     public UniFile createFile(String displayName) {
+        if (TextUtils.isEmpty(displayName)) {
+            return null;
+        }
+
         UniFile child = findFile(displayName);
 
         if (child != null) {
@@ -82,6 +86,10 @@ class TreeDocumentFile extends UniFile {
 
     @Override
     public UniFile createDirectory(String displayName) {
+        if (TextUtils.isEmpty(displayName)) {
+            return null;
+        }
+
         UniFile child = findFile(displayName);
 
         if (child != null) {
@@ -186,6 +194,10 @@ class TreeDocumentFile extends UniFile {
 
     @Override
     public UniFile subFile(String displayName) {
+        if (TextUtils.isEmpty(displayName)) {
+            return null;
+        }
+
         Uri childUri = DocumentsContractApi21.buildChildUri(mUri, displayName);
         return new TreeDocumentFile(this, mContext, childUri, displayName);
     }
@@ -239,6 +251,10 @@ class TreeDocumentFile extends UniFile {
 
     @Override
     public UniFile findFile(String displayName) {
+        if (TextUtils.isEmpty(displayName)) {
+            return null;
+        }
+
         Uri childUri = DocumentsContractApi21.buildChildUri(mUri, displayName);
         return DocumentsContractApi19.exists(mContext, childUri) ?
                 new TreeDocumentFile(this, mContext, childUri) : null;

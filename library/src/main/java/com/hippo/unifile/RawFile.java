@@ -19,6 +19,7 @@ package com.hippo.unifile;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
@@ -44,6 +45,10 @@ class RawFile extends UniFile {
 
     @Override
     public UniFile createFile(String displayName) {
+        if (TextUtils.isEmpty(displayName)) {
+            return null;
+        }
+
         final File target = new File(mFile, displayName);
         if (target.exists()) {
             if (target.isFile()) {
@@ -67,6 +72,10 @@ class RawFile extends UniFile {
 
     @Override
     public UniFile createDirectory(String displayName) {
+        if (TextUtils.isEmpty(displayName)) {
+            return null;
+        }
+
         final File target = new File(mFile, displayName);
         if (target.isDirectory() || target.mkdirs()) {
             return new RawFile(this, target);
@@ -155,7 +164,11 @@ class RawFile extends UniFile {
 
     @Override
     public UniFile subFile(String displayName) {
-        return new RawFile(this, new File(mFile, displayName));
+        if (!TextUtils.isEmpty(displayName)) {
+            return new RawFile(this, new File(mFile, displayName));
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -206,12 +219,20 @@ class RawFile extends UniFile {
 
     @Override
     public UniFile findFile(String displayName) {
+        if (TextUtils.isEmpty(displayName)) {
+            return null;
+        }
+
         final File child = new File(mFile, displayName);
         return child.exists() ? new RawFile(this, child) : null;
     }
 
     @Override
     public boolean renameTo(String displayName) {
+        if (TextUtils.isEmpty(displayName)) {
+            return false;
+        }
+
         final File target = new File(mFile.getParentFile(), displayName);
         if (mFile.renameTo(target)) {
             mFile = target;
