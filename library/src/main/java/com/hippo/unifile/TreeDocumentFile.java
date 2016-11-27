@@ -158,16 +158,6 @@ class TreeDocumentFile extends UniFile {
     }
 
     @Override
-    public boolean ensureDir() {
-        return isDirectory();
-    }
-
-    @Override
-    public boolean ensureFile() {
-        return isFile();
-    }
-
-    @Override
     public boolean delete() {
         return DocumentsContractApi19.delete(mContext, mUri);
     }
@@ -305,7 +295,7 @@ class TreeDocumentFile extends UniFile {
     @Override
     public UniRandomAccessFile createRandomAccessFile(String mode) throws IOException {
         // Check file
-        if (!ensureFile()) {
+        if (!isFile()) {
             throw new IOException("Can't make sure it is file");
         }
 

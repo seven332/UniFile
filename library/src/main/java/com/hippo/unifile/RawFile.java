@@ -141,28 +141,6 @@ class RawFile extends UniFile {
     }
 
     @Override
-    public boolean ensureDir() {
-        return mFile.isDirectory() || mFile.mkdirs();
-    }
-
-    @Override
-    public boolean ensureFile() {
-        if (mFile.exists()) {
-            return mFile.isFile();
-        } else {
-            OutputStream os = null;
-            try {
-                os = new FileOutputStream(mFile);
-                return true;
-            } catch (IOException e) {
-                return false;
-            } finally {
-                IOUtils.closeQuietly(os);
-            }
-        }
-    }
-
-    @Override
     public boolean delete() {
         deleteContents(mFile);
         return mFile.delete();

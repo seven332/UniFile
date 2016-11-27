@@ -147,16 +147,6 @@ class AssetFile extends UniFile {
     }
 
     @Override
-    public boolean ensureDir() {
-        return isDirectory();
-    }
-
-    @Override
-    public boolean ensureFile() {
-        return isFile();
-    }
-
-    @Override
     public boolean delete() {
         // Not supported
         return false;

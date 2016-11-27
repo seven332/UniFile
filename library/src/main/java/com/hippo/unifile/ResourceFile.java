@@ -116,16 +116,6 @@ class ResourceFile extends UniFile {
     }
 
     @Override
-    public boolean ensureDir() {
-        return false;
-    }
-
-    @Override
-    public boolean ensureFile() {
-        return true;
-    }
-
-    @Override
     public boolean delete() {
         return false;
     }

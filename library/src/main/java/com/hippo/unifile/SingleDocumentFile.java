@@ -106,27 +106,6 @@ class SingleDocumentFile extends UniFile {
     }
 
     @Override
-    public boolean ensureDir() {
-        return isDirectory();
-    }
-
-    @Override
-    public boolean ensureFile() {
-        if (isFile()) {
-            return true;
-        } else {
-            OutputStream os;
-            try {
-                os = openOutputStream();
-            } catch (IOException e) {
-                return false;
-            }
-            IOUtils.closeQuietly(os);
-            return true;
-        }
-    }
-
-    @Override
     public boolean delete() {
         return DocumentsContractApi19.delete(mContext, mUri);
     }
@@ -205,7 +184,7 @@ class SingleDocumentFile extends UniFile {
     @Override
     public UniRandomAccessFile createRandomAccessFile(String mode) throws IOException {
         // Check file
-        if (!ensureFile()) {
+        if (!isFile()) {
             throw new IOException("Can't make sure it is file");
         }
 

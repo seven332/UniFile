@@ -121,27 +121,6 @@ class MediaFile extends UniFile {
     }
 
     @Override
-    public boolean ensureDir() {
-        return false;
-    }
-
-    @Override
-    public boolean ensureFile() {
-        if (isFile()) {
-            return true;
-        } else {
-            OutputStream os;
-            try {
-                os = openOutputStream();
-            } catch (IOException e) {
-                return false;
-            }
-            IOUtils.closeQuietly(os);
-            return true;
-        }
-    }
-
-    @Override
     public boolean delete() {
         return false;
     }

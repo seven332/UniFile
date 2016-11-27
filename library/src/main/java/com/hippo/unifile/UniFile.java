@@ -360,22 +360,6 @@ public abstract class UniFile {
     public abstract boolean canWrite();
 
     /**
-     * It works like mkdirs, but it will return true if the UniFile is directory
-     *
-     * @return {@code true} if the directory was created
-     *         or if the directory already existed.
-     */
-    public abstract boolean ensureDir();
-
-    /**
-     * Make sure the UniFile is file
-     *
-     * @return {@code true} if the file can be created
-     *         or if the file already existed.
-     */
-    public abstract boolean ensureFile();
-
-    /**
      * Deletes this file.
      * <p>
      * Note that this method does <i>not</i> throw {@code IOException} on
