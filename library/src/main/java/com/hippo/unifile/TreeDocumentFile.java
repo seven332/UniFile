@@ -59,6 +59,10 @@ class TreeDocumentFile extends UniFile {
                 return null;
             }
         } else {
+            // FIXME There's nothing about display name and extension mentioned in document.
+            // But it works for com.android.externalstorage.documents.
+            // The safest way is use application/octet-stream all the time,
+            // But media store will not be updated.
             int index = displayName.lastIndexOf('.');
             if (index > 0) {
                 String name = displayName.substring(0, index);
