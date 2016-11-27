@@ -26,15 +26,18 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.hippo.unifile.FilenameFilter;
 import com.hippo.unifile.UniFile;
 import com.hippo.unifile.UniRandomAccessFile;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 public class FileActivity extends Activity {
 
@@ -48,11 +51,13 @@ public class FileActivity extends Activity {
         Intent intent = getIntent();
         if (intent == null) {
             Toast.makeText(this, "No data", Toast.LENGTH_SHORT).show();
+            finish();
             return;
         }
         mUri = intent.getData();
         if (mUri == null) {
             Toast.makeText(this, "No data", Toast.LENGTH_SHORT).show();
+            finish();
             return;
         }
 
@@ -60,6 +65,7 @@ public class FileActivity extends Activity {
         if (mFile == null) {
             Log.w("TAG", "Can't recognize the uri: " + mUri);
             Toast.makeText(this, "Can't recognize the uri", Toast.LENGTH_SHORT).show();
+            finish();
             return;
         }
 
@@ -69,18 +75,6 @@ public class FileActivity extends Activity {
             @Override
             public void onClick(View view) {
                 refreshDetail();
-            }
-        });
-        findViewById(R.id.ensure_dir).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ensureDir();
-            }
-        });
-        findViewById(R.id.ensure_file).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ensureFile();
             }
         });
         findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
@@ -93,6 +87,30 @@ public class FileActivity extends Activity {
             @Override
             public void onClick(View view) {
                 listFiles();
+            }
+        });
+        findViewById(R.id.list_files_filename_filter).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listFilesFilenameFilter();
+            }
+        });
+        findViewById(R.id.find_file).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                findFile();
+            }
+        });
+        findViewById(R.id.create_file).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createFile();
+            }
+        });
+        findViewById(R.id.create_directory).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createDirectory();
             }
         });
         findViewById(R.id.open_output_stream).setOnClickListener(new View.OnClickListener() {
@@ -142,31 +160,83 @@ public class FileActivity extends Activity {
         detail.setText(sb.toString());
     }
 
-    private void ensureDir() {
-        ((TextView) findViewById(R.id.ensure_dir_result)).setText("" + mFile.ensureDir());
-    }
-
-    private void ensureFile() {
-        ((TextView) findViewById(R.id.ensure_file_result)).setText("" + mFile.ensureFile());
-    }
-
     private void delete() {
         ((TextView) findViewById(R.id.delete_result)).setText("" + mFile.delete());
     }
 
     private void listFiles() {
-        StringBuilder sb = new StringBuilder();
         UniFile[] files = mFile.listFiles();
         if (files == null) {
-            sb.append("null");
+            Toast.makeText(this, "null", Toast.LENGTH_SHORT).show();
         } else if (files.length == 0) {
-            sb.append("empty");
+            Toast.makeText(this, "empty", Toast.LENGTH_SHORT).show();
         } else {
+            ArrayList<Uri> uris = new ArrayList<>();
             for (UniFile f : files) {
-                sb.append(f.getUri().toString()).append("\n");
+                uris.add(f.getUri());
             }
+            Intent intent = new Intent(this, FileListActivity.class);
+            intent.putParcelableArrayListExtra(FileListActivity.KEY_URIS, uris);
+            startActivity(intent);
         }
-        ((TextView) findViewById(R.id.list_files_result)).setText(sb.toString());
+    }
+
+    private void listFilesFilenameFilter() {
+        UniFile[] files = mFile.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(UniFile dir, String filename) {
+                return filename.startsWith("a");
+            }
+        });
+        if (files == null) {
+            Toast.makeText(this, "null", Toast.LENGTH_SHORT).show();
+        } else if (files.length == 0) {
+            Toast.makeText(this, "empty", Toast.LENGTH_SHORT).show();
+        } else {
+            ArrayList<Uri> uris = new ArrayList<>();
+            for (UniFile f : files) {
+                uris.add(f.getUri());
+            }
+            Intent intent = new Intent(this, FileListActivity.class);
+            intent.putParcelableArrayListExtra(FileListActivity.KEY_URIS, uris);
+            startActivity(intent);
+        }
+    }
+
+    private void findFile() {
+        String filename = ((EditText) findViewById(R.id.find_file_param)).getText().toString();
+        UniFile file = mFile.findFile(filename);
+        if (file != null) {
+            Intent intent = new Intent(this, FileActivity.class);
+            intent.setData(file.getUri());
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "null", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void createFile() {
+        String filename = ((EditText) findViewById(R.id.create_file_param)).getText().toString();
+        UniFile file = mFile.createFile(filename);
+        if (file != null) {
+            Intent intent = new Intent(this, FileActivity.class);
+            intent.setData(file.getUri());
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "null", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void createDirectory() {
+        String filename = ((EditText) findViewById(R.id.create_directory_param)).getText().toString();
+        UniFile file = mFile.createDirectory(filename);
+        if (file != null) {
+            Intent intent = new Intent(this, FileActivity.class);
+            intent.setData(file.getUri());
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "null", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void openOutputStream() {

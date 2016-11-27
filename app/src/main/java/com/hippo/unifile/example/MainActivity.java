@@ -1,15 +1,22 @@
 package com.hippo.unifile.example;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Toast;
 
 import com.hippo.unifile.UniFile;
+
+import java.io.File;
 
 public class MainActivity extends Activity {
 
@@ -64,7 +71,7 @@ public class MainActivity extends Activity {
         findViewById(R.id.asset).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startFileActivity(UniFile.fromAsset(getAssets(), "file2/haha").getUri());
+                startFileActivity(UniFile.fromAsset(getAssets(), "file2").getUri());
             }
         });
 
@@ -74,6 +81,52 @@ public class MainActivity extends Activity {
                 startFileActivity(UniFile.fromResource(MainActivity.this, R.layout.activity_file).getUri());
             }
         });
+
+        findViewById(R.id.raw).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    onClickRawApi23();
+                } else {
+                    onClickRaw();
+                }
+            }
+        });
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private void onClickRawApi23() {
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                Toast.makeText(this, "Grant the permission to test raw file.", Toast.LENGTH_SHORT).show();
+            }
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+        } else {
+            startFileActivityFromRaw();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+            @NonNull String permissions[], @NonNull int[] grantResults) {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            startFileActivityFromRaw();
+        } else {
+            Toast.makeText(this, "Permission denied.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void onClickRaw() {
+        startFileActivityFromRaw();
+    }
+
+    private void startFileActivityFromRaw() {
+        File file = Environment.getExternalStorageDirectory();
+        if (file != null) {
+            startFileActivity(Uri.fromFile(file));
+        } else {
+            Toast.makeText(this, "Can't find external storage.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

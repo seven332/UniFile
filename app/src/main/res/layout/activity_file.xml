@@ -37,29 +37,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-        <Button
-            android:id="@+id/ensure_dir"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAllCaps="false"
-            android:text="ensureDir()"/>
-
-        <TextView
-            android:id="@+id/ensure_dir_result"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <Button
-            android:id="@+id/ensure_file"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAllCaps="false"
-            android:text="ensureFile()"/>
-
-        <TextView
-            android:id="@+id/ensure_file_result"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/colorForeground"/>
 
         <Button
             android:id="@+id/delete"
@@ -73,6 +54,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/colorForeground"/>
+
         <Button
             android:id="@+id/list_files"
             android:layout_width="wrap_content"
@@ -80,22 +66,98 @@
             android:textAllCaps="false"
             android:text="listFiles()"/>
 
-        <TextView
-            android:id="@+id/list_files_result"
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/colorForeground"/>
+
+        <Button
+            android:id="@+id/list_files_filename_filter"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="listFiles(FilenameFilter)"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="List all files which name starts with 'a'"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/colorForeground"/>
+
+        <EditText
+            android:id="@+id/find_file_param"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="filename"/>
+
+        <Button
+            android:id="@+id/find_file"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="findFile()"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/colorForeground"/>
+
+        <EditText
+            android:id="@+id/create_file_param"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="filename"/>
+
+        <Button
+            android:id="@+id/create_file"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="createFile()"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/colorForeground"/>
+
+        <EditText
+            android:id="@+id/create_directory_param"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="filename"/>
+
+        <Button
+            android:id="@+id/create_directory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="createDirectory()"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/colorForeground"/>
 
         <Button
             android:id="@+id/open_output_stream"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAllCaps="false"
-            android:text="openOutputStream()"/>
+            android:text="openOutputStream(append = true)"/>
 
         <TextView
             android:id="@+id/open_output_stream_result"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/colorForeground"/>
 
         <Button
             android:id="@+id/open_input_stream"
@@ -109,6 +171,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/colorForeground"/>
+
         <Button
             android:id="@+id/create_random_access_file_r"
             android:layout_width="wrap_content"
@@ -120,6 +187,11 @@
             android:id="@+id/create_random_access_file_r_result"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/colorForeground"/>
 
         <Button
             android:id="@+id/create_random_access_file_rw"

@@ -75,4 +75,12 @@
         android:textAllCaps="false"
         android:text="Resource File"/>
 
+    <Button
+        android:id="@+id/raw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textAllCaps="false"
+        android:text="Raw File"/>
+
 </LinearLayout>
