@@ -125,12 +125,6 @@ class ResourceFile extends UniFile {
         return true;
     }
 
-    @Nullable
-    @Override
-    public UniFile subFile(String displayName) {
-        return null;
-    }
-
     @Override
     public boolean delete() {
         return false;

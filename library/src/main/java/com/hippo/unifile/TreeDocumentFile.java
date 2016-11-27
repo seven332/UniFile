@@ -36,19 +36,11 @@ class TreeDocumentFile extends UniFile {
 
     private final Context mContext;
     private Uri mUri;
-    private String mFilename;
 
     TreeDocumentFile(UniFile parent, Context context, Uri uri) {
         super(parent);
         mContext = context.getApplicationContext();
         mUri = uri;
-    }
-
-    private TreeDocumentFile(UniFile parent, Context context, Uri uri, String filename) {
-        super(parent);
-        mContext = context.getApplicationContext();
-        mUri = uri;
-        mFilename = filename;
     }
 
     @Override
@@ -167,44 +159,12 @@ class TreeDocumentFile extends UniFile {
 
     @Override
     public boolean ensureDir() {
-        if (isDirectory()) {
-            return true;
-        } else if (isFile()) {
-            return false;
-        }
-
-        UniFile parent = getParentFile();
-        if (parent != null && parent.ensureDir() && mFilename != null) {
-            return parent.createDirectory(mFilename) != null;
-        } else {
-            return false;
-        }
+        return isDirectory();
     }
 
     @Override
     public boolean ensureFile() {
-        if (isFile()) {
-            return true;
-        } else if (isDirectory()) {
-            return false;
-        }
-
-        UniFile parent = getParentFile();
-        if (parent != null && parent.ensureDir() && mFilename != null) {
-            return parent.createFile(mFilename) != null;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public UniFile subFile(String displayName) {
-        if (TextUtils.isEmpty(displayName)) {
-            return null;
-        }
-
-        Uri childUri = DocumentsContractApi21.buildChildUri(mUri, displayName);
-        return new TreeDocumentFile(this, mContext, childUri, displayName);
+        return isFile();
     }
 
     @Override
@@ -242,10 +202,9 @@ class TreeDocumentFile extends UniFile {
             return null;
         }
 
-        final Uri[] result = DocumentsContractApi21.listFiles(mContext, mUri);
+        final Uri[] uris = DocumentsContractApi21.listFiles(mContext, mUri);
         final ArrayList<UniFile> results = new ArrayList<>();
-        for (int i = 0, n = result.length; i < n; i++) {
-            Uri uri = result[i];
+        for (Uri uri : uris) {
             String name = DocumentsContractApi19.getName(mContext, uri);
             if (name != null && filter.accept(this, name)) {
                 results.add(new TreeDocumentFile(this, mContext, uri));
@@ -260,9 +219,18 @@ class TreeDocumentFile extends UniFile {
             return null;
         }
 
-        Uri childUri = DocumentsContractApi21.buildChildUri(mUri, displayName);
-        return DocumentsContractApi19.exists(mContext, childUri) ?
-                new TreeDocumentFile(this, mContext, childUri) : null;
+        if (!isDirectory()) {
+            return null;
+        }
+
+        final Uri[] result = DocumentsContractApi21.listFiles(mContext, mUri);
+        for (Uri uri : result) {
+            final String name = DocumentsContractApi19.getName(mContext, uri);
+            if (displayName.equals(name)) {
+                return new TreeDocumentFile(this, mContext, uri);
+            }
+        }
+        return null;
     }
 
     @Override

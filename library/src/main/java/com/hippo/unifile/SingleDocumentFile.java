@@ -127,11 +127,6 @@ class SingleDocumentFile extends UniFile {
     }
 
     @Override
-    public UniFile subFile(String displayName) {
-        return null;
-    }
-
-    @Override
     public boolean delete() {
         return DocumentsContractApi19.delete(mContext, mUri);
     }

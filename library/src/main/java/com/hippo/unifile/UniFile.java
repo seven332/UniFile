@@ -376,14 +376,6 @@ public abstract class UniFile {
     public abstract boolean ensureFile();
 
     /**
-     * Get child file of this directory, the child might not exist.
-     *
-     * @return the child file, {@code null} if not supported
-     */
-    @Nullable
-    public abstract UniFile subFile(String displayName);
-
-    /**
      * Deletes this file.
      * <p>
      * Note that this method does <i>not</i> throw {@code IOException} on

@@ -163,15 +163,6 @@ class RawFile extends UniFile {
     }
 
     @Override
-    public UniFile subFile(String displayName) {
-        if (!TextUtils.isEmpty(displayName)) {
-            return new RawFile(this, new File(mFile, displayName));
-        } else {
-            return null;
-        }
-    }
-
-    @Override
     public boolean delete() {
         deleteContents(mFile);
         return mFile.delete();

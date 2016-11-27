@@ -156,12 +156,6 @@ class AssetFile extends UniFile {
         return isFile();
     }
 
-    @Nullable
-    @Override
-    public UniFile subFile(String displayName) {
-        return findFile(displayName);
-    }
-
     @Override
     public boolean delete() {
         // Not supported

@@ -142,11 +142,6 @@ class MediaFile extends UniFile {
     }
 
     @Override
-    public UniFile subFile(String displayName) {
-        return null;
-    }
-
-    @Override
     public boolean delete() {
         return false;
     }

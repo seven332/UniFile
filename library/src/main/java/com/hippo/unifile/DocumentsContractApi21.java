@@ -83,19 +83,6 @@ final class DocumentsContractApi21 {
         return DocumentsContract.buildDocumentUriUsingTree(treeUri, documentId);
     }
 
-    public static String getTreeDocumentPath(Uri documentUri) {
-        final List<String> paths = documentUri.getPathSegments();
-        if (paths.size() >= 4 && PATH_TREE.equals(paths.get(0)) && PATH_DOCUMENT.equals(paths.get(2))) {
-            return paths.get(3);
-        }
-        throw new IllegalArgumentException("Invalid URI: " + documentUri);
-    }
-
-    public static Uri buildChildUri(Uri uri, String displayName) {
-        return DocumentsContract.buildDocumentUriUsingTree(uri,
-                getTreeDocumentPath(uri) + "/" + displayName);
-    }
-
     public static Uri[] listFiles(Context context, Uri self) {
         final ContentResolver resolver = context.getContentResolver();
         final Uri childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(self,
