@@ -27,7 +27,6 @@ import android.os.Build;
 import android.provider.DocumentsContract;
 import android.text.TextUtils;
 import android.util.Log;
-import java.io.FileNotFoundException;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 final class DocumentsContractApi19 {
@@ -120,7 +119,7 @@ final class DocumentsContractApi19 {
     public static boolean delete(Context context, Uri self) {
         try {
             return DocumentsContract.deleteDocument(context.getContentResolver(), self);
-        } catch (SecurityException | FileNotFoundException | IllegalArgumentException e) {
+        } catch (Throwable e) {
             // Maybe user ejects tf card
             Log.e(TAG, "Failed to renameTo", e);
             return false;
