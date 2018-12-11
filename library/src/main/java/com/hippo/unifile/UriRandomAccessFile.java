@@ -87,30 +87,33 @@ final class UriRandomAccessFile extends RandomAccessFile {
         }
 
         // Get FileDescriptor
-        ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, mode);
+        ParcelFileDescriptor pfd;
+        try {
+            pfd = context.getContentResolver().openFileDescriptor(uri, mode);
+        } catch (SecurityException e) {
+            throw new IOException("Can't get ParcelFileDescriptor", e);
+        }
         if (pfd == null) {
             throw new IOException("Can't get ParcelFileDescriptor");
         }
-        FileDescriptor fd = pfd.getFileDescriptor();
+        FileDescriptor fd;
+        try {
+            fd = pfd.getFileDescriptor();
+        } catch (SecurityException e) {
+            pfd.close();
+            throw new IOException("Can't get FileDescriptor", e);
+        }
         if (fd == null) {
+            pfd.close();
             throw new IOException("Can't get FileDescriptor");
         }
 
         // Get temp file
-        File dir = context.getCacheDir();
-        if (dir == null) {
-            throw new IOException("Can't get cache dir");
-        }
-        File temp = null;
-        for (int i = 0; i < 100; i++) {
-            temp = new File(dir, Integer.toString(i));
-            if (temp.isFile() || !temp.exists()) {
-                break;
-            }
-            temp = null;
-        }
-        if (temp == null) {
-            throw new IOException("Can't create temp file");
+        File temp;
+        try {
+            temp = File.createTempFile("UriRandomAccessFile", ".placeholder");
+        } catch (IOException | SecurityException e) {
+            throw new IOException("Can't create temp file", e);
         }
 
         // Create RandomAccessFile
@@ -118,7 +121,8 @@ final class UriRandomAccessFile extends RandomAccessFile {
         try {
             randomAccessFile = new UriRandomAccessFile(temp, mode, pfd);
         } catch (FileNotFoundException e) {
-            throw new IOException("Can't create UriRandomAccessFile");
+            pfd.close();
+            throw new IOException("Can't create UriRandomAccessFile", e);
         }
 
         // Close old FileDescriptor
@@ -128,20 +132,22 @@ final class UriRandomAccessFile extends RandomAccessFile {
                 METHOD_CLOSE.invoke(null, (FileDescriptor) obj);
             }
         } catch (IllegalAccessException e) {
-            Log.e(TAG, "Failed to invoke libcore.io.IoUtils.close(FileDescriptor): " + e);
+            pfd.close();
             randomAccessFile.close();
-            throw new IOException(e.getMessage());
+            throw new IOException("Failed to invoke libcore.io.IoUtils.close(FileDescriptor)", e);
         } catch (InvocationTargetException e) {
-            Log.e(TAG, "Failed to invoke libcore.io.IoUtils.close(FileDescriptor): " + e);
+            pfd.close();
             randomAccessFile.close();
-            throw new IOException(e.getMessage());
+            throw new IOException("Failed to invoke libcore.io.IoUtils.close(FileDescriptor)", e);
         }
+        // Delete temp file
+        temp.delete();
 
         // Set new FileDescriptor
         try {
             FIELD_FD.set(randomAccessFile, fd);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            pfd.close();
             randomAccessFile.close();
             throw new IOException(e.getMessage());
         }
