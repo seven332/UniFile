@@ -62,13 +62,13 @@ class RawRandomAccessFile implements UniRandomAccessFile {
     }
 
     @Override
-    public void read(byte[] b) throws IOException {
-        mFile.read(b);
+    public int read(byte[] b) throws IOException {
+        return mFile.read(b);
     }
 
     @Override
-    public void read(byte[] b, int off, int len) throws IOException {
-        mFile.read(b, off, len);
+    public int read(byte[] b, int off, int len) throws IOException {
+        return mFile.read(b, off, len);
     }
 
     @Override

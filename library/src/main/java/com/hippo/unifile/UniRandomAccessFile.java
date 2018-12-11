@@ -20,7 +20,6 @@ package com.hippo.unifile;
  * Created by Hippo on 8/15/2016.
  */
 
-import java.io.EOFException;
 import java.io.IOException;
 
 /**
@@ -75,16 +74,17 @@ public interface UniRandomAccessFile {
      */
     void setLength(long newLength) throws IOException;
 
-
     /**
      * Reads b.length bytes from this file into the byte array,
      * starting at the current file pointer.
      *
      * @param b the buffer into which the data is read
-     * @throws EOFException if this file reaches the end before reading all the bytes
+     * @return the total number of bytes read into the buffer, or
+     *         {@code -1} if there is no more data because the end of
+     *         the file has been reached.
      * @throws IOException if an I/O error occurs
      */
-    void read(byte[] b) throws IOException;
+    int read(byte[] b) throws IOException;
 
     /**
      * Reads exactly len bytes from this file into the byte array,
@@ -93,9 +93,12 @@ public interface UniRandomAccessFile {
      * @param b the buffer into which the data is read
      * @param off the start offset of the data
      * @param len the number of bytes to read
+     * @return the total number of bytes read into the buffer, or
+     *         {@code -1} if there is no more data because the end of
+     *         the file has been reached.
      * @throws IOException
      */
-    void read(byte[] b, int off, int len) throws IOException;
+    int read(byte[] b, int off, int len) throws IOException;
 
     /**
      * Writes b.length bytes from the specified byte array to this file,
