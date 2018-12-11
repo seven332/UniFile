@@ -18,6 +18,7 @@ package com.hippo.unifile;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 
 import java.io.IOException;
@@ -191,6 +192,10 @@ class MediaFile extends UniFile {
     @NonNull
     @Override
     public UniRandomAccessFile createRandomAccessFile(String mode) throws IOException {
-        return new RawRandomAccessFile(UriRandomAccessFile.create(mContext, mUri, mode));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return FileDescriptorRandomAccessFile.create(mContext, mUri, mode);
+        } else {
+            return new RawRandomAccessFile(UriRandomAccessFile.create(mContext, mUri, mode));
+        }
     }
 }

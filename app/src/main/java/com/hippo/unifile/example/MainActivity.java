@@ -6,16 +6,14 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-
 import com.hippo.unifile.UniFile;
 import com.hippo.unifile.UriTestCreator;
-
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import static android.content.ContentValues.TAG;
-
 public class MainActivity extends Activity {
+
+    private static final String LOG_TAG = "MainActivity";
 
     public static final int REQUEST_CODE_DOCUMENT = 0;
     public static final int REQUEST_CODE_SELECT = 1;
@@ -56,15 +54,15 @@ public class MainActivity extends Activity {
 
 
                 Uri uri = file.getUri();
-                Log.i(TAG, "Start test: " + uri.toString());
+                Log.i(LOG_TAG, "Start test: " + uri.toString());
                 test(new UriTestCreator(this, uri));
-                Log.i(TAG, "End test");
+                Log.i(LOG_TAG, "End test");
             }
         } else if (requestCode == REQUEST_CODE_SELECT) {
             Uri uri = data.getData();
-            Log.i(TAG, "Start test: " + uri.toString());
+            Log.i(LOG_TAG, "Start test: " + uri.toString());
             test(new UriTestCreator(this, uri));
-            Log.i(TAG, "End test");
+            Log.i(LOG_TAG, "End test");
         }
     }
 

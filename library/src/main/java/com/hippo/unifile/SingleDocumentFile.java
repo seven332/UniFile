@@ -18,8 +18,8 @@ package com.hippo.unifile;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -184,6 +184,10 @@ class SingleDocumentFile extends UniFile {
         if (!ensureFile()) {
             throw new IOException("Can't make sure it is file");
         }
-        return new RawRandomAccessFile(UriRandomAccessFile.create(mContext, mUri, mode));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return FileDescriptorRandomAccessFile.create(mContext, mUri, mode);
+        } else {
+            return new RawRandomAccessFile(UriRandomAccessFile.create(mContext, mUri, mode));
+        }
     }
 }
