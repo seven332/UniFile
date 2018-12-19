@@ -24,8 +24,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.DocumentsContract;
 import android.util.Log;
-
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +41,7 @@ final class DocumentsContractApi21 {
         try {
             return DocumentsContract.createDocument(context.getContentResolver(), self, mimeType,
                     displayName);
-        } catch (SecurityException | FileNotFoundException e) {
+        } catch (Exception e) {
             // Maybe user ejects tf card
             Log.e(TAG, "Failed to createFile", e);
             return null;
@@ -102,7 +100,7 @@ final class DocumentsContractApi21 {
     public static Uri renameTo(Context context, Uri self, String displayName) {
         try {
             return DocumentsContract.renameDocument(context.getContentResolver(), self, displayName);
-        } catch (SecurityException | FileNotFoundException e) {
+        } catch (Exception e) {
             // Maybe user ejects tf card
             Log.e(TAG, "Failed to renameTo", e);
             return null;
