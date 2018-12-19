@@ -43,7 +43,7 @@ final class DocumentsContractApi21 {
                     displayName);
         } catch (Exception e) {
             // Maybe user ejects tf card
-            Log.e(TAG, "Failed to createFile", e);
+            Log.e(TAG, "Failed to createFile: " + self, e);
             return null;
         }
     }
@@ -89,7 +89,7 @@ final class DocumentsContractApi21 {
                 }
             }
         } catch (Exception e) {
-            // Log.w(TAG, "Failed query: " + e);
+            Log.e(TAG, "Failed listFiles: " + self, e);
         } finally {
             closeQuietly(c);
         }
@@ -102,7 +102,7 @@ final class DocumentsContractApi21 {
             return DocumentsContract.renameDocument(context.getContentResolver(), self, displayName);
         } catch (Exception e) {
             // Maybe user ejects tf card
-            Log.e(TAG, "Failed to renameTo", e);
+            Log.e(TAG, "Failed to renameTo:" + self + ", " + displayName, e);
             return null;
         }
     }
