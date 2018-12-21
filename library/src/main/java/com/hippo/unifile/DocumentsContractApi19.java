@@ -120,6 +120,7 @@ final class DocumentsContractApi19 {
         try {
             return DocumentsContract.deleteDocument(context.getContentResolver(), self);
         } catch (Throwable e) {
+            Utils.throwIfFatal(e);
             // Maybe user ejects tf card
             Log.e(TAG, "Failed to renameTo", e);
             return false;
@@ -134,11 +135,12 @@ final class DocumentsContractApi19 {
             c = resolver.query(self, new String[] {
                     DocumentsContract.Document.COLUMN_DOCUMENT_ID }, null, null, null);
             return null != c && c.getCount() > 0;
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            Utils.throwIfFatal(e);
             // Log.w(TAG, "Failed query: " + e);
             return false;
         } finally {
-            Contracts.closeQuietly(c);
+            Utils.closeQuietly(c);
         }
     }
 }

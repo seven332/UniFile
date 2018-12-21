@@ -52,7 +52,13 @@ class UriOutputStream extends FileOutputStream {
 
     @NonNull
     static OutputStream create(Context context, Uri uri, String mode) throws IOException {
-        ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, mode);
+        ParcelFileDescriptor pfd;
+        try {
+            pfd = context.getContentResolver().openFileDescriptor(uri, mode);
+        } catch (Throwable e) {
+            Utils.throwIfFatal(e);
+            throw new IOException("Can't get ParcelFileDescriptor", e);
+        }
         if (pfd == null) {
             throw new IOException("Can't get ParcelFileDescriptor");
         }

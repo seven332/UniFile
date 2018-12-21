@@ -41,7 +41,8 @@ final class DocumentsContractApi21 {
         try {
             return DocumentsContract.createDocument(context.getContentResolver(), self, mimeType,
                     displayName);
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            Utils.throwIfFatal(e);
             // Maybe user ejects tf card
             Log.e(TAG, "Failed to createFile: " + self, e);
             return null;
@@ -88,10 +89,11 @@ final class DocumentsContractApi21 {
                     results.add(documentUri);
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            Utils.throwIfFatal(e);
             Log.e(TAG, "Failed listFiles: " + self, e);
         } finally {
-            closeQuietly(c);
+            Utils.closeQuietly(c);
         }
 
         return results.toArray(new Uri[results.size()]);
@@ -100,21 +102,11 @@ final class DocumentsContractApi21 {
     public static Uri renameTo(Context context, Uri self, String displayName) {
         try {
             return DocumentsContract.renameDocument(context.getContentResolver(), self, displayName);
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            Utils.throwIfFatal(e);
             // Maybe user ejects tf card
             Log.e(TAG, "Failed to renameTo:" + self + ", " + displayName, e);
             return null;
-        }
-    }
-
-    private static void closeQuietly(AutoCloseable closeable) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (RuntimeException rethrown) {
-                throw rethrown;
-            } catch (Exception ignored) {
-            }
         }
     }
 }

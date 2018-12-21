@@ -80,7 +80,7 @@ class MediaFile extends UniFile {
         } catch (IOException e) {
             return false;
         }
-        IOUtils.closeQuietly(is);
+        Utils.closeQuietly(is);
         return true;
     }
 
@@ -107,7 +107,7 @@ class MediaFile extends UniFile {
         } catch (IOException e) {
             return false;
         }
-        IOUtils.closeQuietly(os);
+        Utils.closeQuietly(os);
         return true;
     }
 
@@ -127,7 +127,7 @@ class MediaFile extends UniFile {
             } catch (IOException e) {
                 return false;
             }
-            IOUtils.closeQuietly(os);
+            Utils.closeQuietly(os);
             return true;
         }
     }
@@ -182,11 +182,7 @@ class MediaFile extends UniFile {
     @NonNull
     @Override
     public InputStream openInputStream() throws IOException {
-        InputStream is = mContext.getContentResolver().openInputStream(mUri);
-        if (is == null) {
-            throw new IOException("Can't open InputStream");
-        }
-        return is;
+        return Contracts.openInputStream(mContext, mUri);
     }
 
     @NonNull

@@ -90,7 +90,8 @@ final class UriRandomAccessFile extends RandomAccessFile {
         ParcelFileDescriptor pfd;
         try {
             pfd = context.getContentResolver().openFileDescriptor(uri, mode);
-        } catch (SecurityException e) {
+        } catch (Throwable e) {
+            Utils.throwIfFatal(e);
             throw new IOException("Can't get ParcelFileDescriptor", e);
         }
         if (pfd == null) {

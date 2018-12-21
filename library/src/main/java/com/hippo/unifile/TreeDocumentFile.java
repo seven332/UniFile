@@ -249,31 +249,19 @@ class TreeDocumentFile extends UniFile {
     @NonNull
     @Override
     public OutputStream openOutputStream() throws IOException {
-        OutputStream os = mContext.getContentResolver().openOutputStream(mUri);
-        if (os == null) {
-            throw new IOException("Can't open OutputStream");
-        }
-        return os;
+        return Contracts.openOutputStream(mContext, mUri);
     }
 
     @NonNull
     @Override
     public OutputStream openOutputStream(boolean append) throws IOException {
-        OutputStream os = mContext.getContentResolver().openOutputStream(mUri, append ? "wa" : "w");
-        if (os == null) {
-            throw new IOException("Can't open OutputStream");
-        }
-        return os;
+        return Contracts.openOutputStream(mContext, mUri, append);
     }
 
     @NonNull
     @Override
     public InputStream openInputStream() throws IOException {
-        InputStream is = mContext.getContentResolver().openInputStream(mUri);
-        if (is == null) {
-            throw new IOException("Can't open InputStream");
-        }
-        return is;
+        return Contracts.openInputStream(mContext, mUri);
     }
 
     @NonNull

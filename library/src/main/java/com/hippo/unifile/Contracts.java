@@ -20,11 +20,15 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 final class Contracts {
     private Contracts() {}
 
-    public static String queryForString(Context context, Uri self, String column,
+    static String queryForString(Context context, Uri self, String column,
             String defaultValue) {
         final ContentResolver resolver = context.getContentResolver();
 
@@ -36,19 +40,20 @@ final class Contracts {
             } else {
                 return defaultValue;
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            Utils.throwIfFatal(e);
             return defaultValue;
         } finally {
-            closeQuietly(c);
+            Utils.closeQuietly(c);
         }
     }
 
-    public static int queryForInt(Context context, Uri self, String column,
+    static int queryForInt(Context context, Uri self, String column,
             int defaultValue) {
         return (int) queryForLong(context, self, column, defaultValue);
     }
 
-    public static long queryForLong(Context context, Uri self, String column,
+    static long queryForLong(Context context, Uri self, String column,
             long defaultValue) {
         final ContentResolver resolver = context.getContentResolver();
 
@@ -60,21 +65,53 @@ final class Contracts {
             } else {
                 return defaultValue;
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            Utils.throwIfFatal(e);
             return defaultValue;
         } finally {
-            closeQuietly(c);
+            Utils.closeQuietly(c);
         }
     }
 
-    public static void closeQuietly(Cursor closeable) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (RuntimeException rethrown) {
-                throw rethrown;
-            } catch (Exception ignored) {
+    @NonNull
+    static OutputStream openOutputStream(Context context, Uri uri) throws IOException {
+        try {
+            OutputStream os = context.getContentResolver().openOutputStream(uri);
+            if (os == null) {
+                throw new IOException("Can't open OutputStream");
             }
+            return os;
+        } catch (Throwable e) {
+            Utils.throwIfFatal(e);
+            throw new IOException("Can't open OutputStream", e);
+        }
+    }
+
+    @NonNull
+    static OutputStream openOutputStream(Context context, Uri uri, boolean append) throws IOException {
+        try {
+            OutputStream os = context.getContentResolver().openOutputStream(uri, append ? "wa" : "w");
+            if (os == null) {
+                throw new IOException("Can't open OutputStream");
+            }
+            return os;
+        } catch (Throwable e) {
+            Utils.throwIfFatal(e);
+            throw new IOException("Can't open OutputStream", e);
+        }
+    }
+
+    @NonNull
+    static InputStream openInputStream(Context context, Uri uri) throws IOException {
+        try {
+            InputStream is = context.getContentResolver().openInputStream(uri);
+            if (is == null) {
+                throw new IOException("Can't open InputStream");
+            }
+            return is;
+        } catch (Throwable e) {
+            Utils.throwIfFatal(e);
+            throw new IOException("Can't open InputStream", e);
         }
     }
 }

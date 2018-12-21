@@ -60,7 +60,7 @@ class RawFile extends UniFile {
                 Log.w(TAG, "Failed to createFile " + displayName + ": " + e);
                 return null;
             } finally {
-                IOUtils.closeQuietly(os);
+                Utils.closeQuietly(os);
             }
         }
     }
@@ -142,7 +142,7 @@ class RawFile extends UniFile {
             } catch (IOException e) {
                 return false;
             } finally {
-                IOUtils.closeQuietly(os);
+                Utils.closeQuietly(os);
             }
         }
     }
